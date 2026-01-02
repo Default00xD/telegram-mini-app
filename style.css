@@ -1,0 +1,305 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #000000);
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    border-radius: 12px;
+}
+
+header h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--tg-theme-text-color, #000000);
+}
+
+header p {
+    color: var(--tg-theme-hint-color, #999999);
+    font-size: 14px;
+}
+
+.card {
+    background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: var(--tg-theme-text-color, #000000);
+}
+
+.hint {
+    font-size: 12px;
+    color: var(--tg-theme-hint-color, #999999);
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--tg-theme-text-color, #000000);
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+    border-radius: 8px;
+    font-size: 16px;
+    background: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #000000);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--tg-theme-button-color, #3390ec);
+}
+
+.form-group input[readonly] {
+    background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+    cursor: not-allowed;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.btn-parse {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: var(--tg-theme-button-color, #3390ec);
+    color: var(--tg-theme-button-text-color, #ffffff);
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-parse:active {
+    opacity: 0.8;
+}
+
+.btn-primary,
+.btn-secondary {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: opacity 0.2s;
+}
+
+.btn-primary {
+    background: var(--tg-theme-button-color, #3390ec);
+    color: var(--tg-theme-button-text-color, #ffffff);
+}
+
+.btn-secondary {
+    background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    color: var(--tg-theme-text-color, #000000);
+}
+
+.btn-primary:active,
+.btn-secondary:active {
+    opacity: 0.8;
+}
+
+/* Результаты TCO */
+.tco-results {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.tco-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: var(--tg-theme-bg-color, #ffffff);
+    border-radius: 8px;
+    border: 2px solid var(--tg-theme-hint-color, #e0e0e0);
+}
+
+.tco-item.highlight {
+    border-color: var(--tg-theme-button-color, #3390ec);
+    background: var(--tg-theme-button-color, #3390ec);
+    color: var(--tg-theme-button-text-color, #ffffff);
+}
+
+.tco-label {
+    font-size: 14px;
+    color: var(--tg-theme-hint-color, #999999);
+}
+
+.tco-item.highlight .tco-label {
+    color: var(--tg-theme-button-text-color, #ffffff);
+}
+
+.tco-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--tg-theme-text-color, #000000);
+}
+
+.tco-item.highlight .tco-value {
+    color: var(--tg-theme-button-text-color, #ffffff);
+}
+
+/* Детализация расходов */
+.expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: var(--tg-theme-bg-color, #ffffff);
+    border-radius: 8px;
+}
+
+.expense-label {
+    font-size: 14px;
+    color: var(--tg-theme-text-color, #000000);
+}
+
+.expense-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--tg-theme-text-color, #000000);
+}
+
+.expense-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-top: 10px;
+    background: var(--tg-theme-button-color, #3390ec);
+    border-radius: 8px;
+    color: var(--tg-theme-button-text-color, #ffffff);
+}
+
+.expense-total .expense-label,
+.expense-total .expense-value {
+    color: var(--tg-theme-button-text-color, #ffffff);
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* График */
+#expenses-chart {
+    max-height: 300px;
+    margin: 20px 0;
+}
+
+/* Сравнение */
+.comparison-text {
+    padding: 15px;
+    background: var(--tg-theme-bg-color, #ffffff);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--tg-theme-text-color, #000000);
+}
+
+.comparison-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-item {
+    padding: 15px;
+    background: var(--tg-theme-bg-color, #ffffff);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--tg-theme-hint-color, #999999);
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--tg-theme-text-color, #000000);
+}
+
+/* Секции */
+.section {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Темная тема */
+body.dark-theme {
+    background: var(--tg-theme-bg-color, #1a1a1a);
+    color: var(--tg-theme-text-color, #ffffff);
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .comparison-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    header h1 {
+        font-size: 20px;
+    }
+}

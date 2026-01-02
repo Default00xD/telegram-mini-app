@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расчет TCO автомобиля</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚗 Расчет стоимости владения</h1>
+            <p>Узнайте полную стоимость владения автомобилем</p>
+        </header>
+        
+        <main id="main-content">
+            <!-- Форма ввода данных -->
+            <div id="input-section" class="section">
+                <div class="card">
+                    <h2>📝 Введите данные об автомобиле</h2>
+                    <p class="hint">Например: "opel astra j 2011 1.6 115hp"</p>
+                    
+                    <div class="form-group">
+                        <label for="car-input">Описание автомобиля:</label>
+                        <input type="text" id="car-input" placeholder="opel astra j 2011 1.6 115hp" 
+                               autocomplete="off">
+                        <button type="button" id="parse-btn" class="btn-parse">🔍 Распознать</button>
+                    </div>
+                </div>
+
+                <div class="card" id="car-details-card" style="display: none;">
+                    <h2>🚙 Данные автомобиля</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="brand">Марка:</label>
+                            <input type="text" id="brand" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="model">Модель:</label>
+                            <input type="text" id="model" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="year">Год выпуска:</label>
+                            <input type="number" id="year" min="1990" max="2024">
+                        </div>
+                        <div class="form-group">
+                            <label for="power">Мощность (л.с.):</label>
+                            <input type="number" id="power" min="50" max="1000">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="engine-type">Тип двигателя:</label>
+                        <select id="engine-type">
+                            <option value="petrol">Бензин</option>
+                            <option value="diesel">Дизель</option>
+                            <option value="hybrid">Гибрид</option>
+                            <option value="electric">Электрический</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fuel-consumption">Расход топлива (л/100км):</label>
+                        <input type="number" id="fuel-consumption" step="0.1" min="3" max="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="mileage">Текущий пробег (км):</label>
+                        <input type="number" id="mileage" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="annual-mileage">Пробег в год (км):</label>
+                        <input type="number" id="annual-mileage" value="20000" min="1000" max="100000">
+                    </div>
+                    <div class="form-group">
+                        <label for="region">Регион эксплуатации:</label>
+                        <select id="region">
+                            <option value="moscow">Москва</option>
+                            <option value="spb">Санкт-Петербург</option>
+                            <option value="other">Другой регион</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownership-years">Срок владения (лет):</label>
+                        <input type="number" id="ownership-years" value="1" min="1" max="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="purchase-price">Цена покупки (₽):</label>
+                        <input type="number" id="purchase-price" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="parking-cost">Стоимость парковки в месяц (₽):</label>
+                        <input type="number" id="parking-cost" value="0" min="0">
+                    </div>
+                    <button type="button" id="calculate-btn" class="btn-primary">💰 Рассчитать TCO</button>
+                </div>
+            </div>
+
+            <!-- Результаты расчета -->
+            <div id="results-section" class="section" style="display: none;">
+                <div class="card">
+                    <h2>📊 Результаты расчета</h2>
+                    <div class="tco-results">
+                        <div class="tco-item">
+                            <div class="tco-label">Стоимость за 1 км:</div>
+                            <div class="tco-value" id="cost-per-km">-</div>
+                        </div>
+                        <div class="tco-item">
+                            <div class="tco-label">Стоимость за 1 месяц:</div>
+                            <div class="tco-value" id="cost-per-month">-</div>
+                        </div>
+                        <div class="tco-item highlight">
+                            <div class="tco-label">Стоимость за 1 год:</div>
+                            <div class="tco-value" id="cost-per-year">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📈 Распределение расходов</h2>
+                    <canvas id="expenses-chart"></canvas>
+                </div>
+
+                <div class="card">
+                    <h2>📋 Детализация расходов</h2>
+                    <div id="expenses-detail"></div>
+                </div>
+
+                <div class="card">
+                    <h2>📊 Сравнение с аналогами</h2>
+                    <div id="comparison"></div>
+                </div>
+
+                <button type="button" id="back-btn" class="btn-secondary">← Назад к вводу</button>
+            </div>
+        </main>
+    </div>
+    
+    <script src="car-ai.js"></script>
+    <script src="tco-calculator.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
