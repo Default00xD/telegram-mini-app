@@ -38,7 +38,7 @@ function initializeApp() {
 }
 
 // Обработка распознавания автомобиля
-function handleParseCar() {
+async function handleParseCar() {
     const input = document.getElementById('car-input').value.trim();
     
     if (!input) {
@@ -55,9 +55,8 @@ function handleParseCar() {
     });
     
     // Имитация задержки ИИ-обработки
-    setTimeout(() => {
-        const parsedData = parseCarDescription(input);
-        const carData = getCarData(parsedData);
+    try {
+        const carData = await getCarData(input);
         
         if (carData) {
             fillCarForm(carData, parsedData);
@@ -67,27 +66,31 @@ function handleParseCar() {
             tg.showAlert('Не удалось распознать. Заполните поля вручную.');
             tg.HapticFeedback.notificationOccurred('error');
         }
-    }, 800);
+    } catch (error) {
+        console.error(error);
+        tg.showAlert('Ошибка при распознавании.');
+        tg.HapticFeedback.notificationOccurred('error');
+    }
 }
 
 // Заполнение формы данными автомобиля
 function fillCarForm(carData, parsedData) {
     document.getElementById('brand').value = carData.brand || '';
     document.getElementById('model').value = carData.model || '';
-    document.getElementById('year').value = carData.year || new Date().getFullYear() - 5;
-    document.getElementById('power').value = carData.power || '';
-    document.getElementById('engine-type').value = carData.engineType || 'petrol';
-    document.getElementById('fuel-consumption').value = carData.fuelConsumption?.toFixed(1) || '8.0';
+    document.getElementById('year').value = carData.year || new Date().getFullYear();
+    document.getElementById('hp').value = carData.hp || '';
+    document.getElementById('engine').value = carData.engine || '';
+    document.getElementById('consumption').value = carData.consumption?.toFixed(1) || '10.0';
     
     // Расчет пробега
     const currentYear = new Date().getFullYear();
-    const carAge = carData.year ? currentYear - carData.year : 5;
+    const carAge = carData.year ? currentYear - carData.year : 0;
     const estimatedMileage = carAge * 20000;
-    document.getElementById('mileage').value = estimatedMileage || carData.avgMileage || 100000;
+    document.getElementById('km').value = carData.km || estimatedMileage;
     
     document.getElementById('annual-mileage').value = 20000;
     document.getElementById('ownership-years').value = 1;
-    document.getElementById('purchase-price').value = carData.avgPrice || '';
+    document.getElementById('price').value = carData.price || '';
     document.getElementById('parking-cost').value = 0;
     
     // Показываем карточку с деталями
