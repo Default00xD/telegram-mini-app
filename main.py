@@ -1,7 +1,11 @@
 from gigachat import GigaChat
 import json
+import os
+from dotenv import load_dotenv
+load_dotenv()  # загружает переменные из .env
 
-giga = GigaChat(credentials='MDE5YjgwN2ItMTViYy03OGM1LWIwOWUtYjY4YmYzZDJiNmQ5OjA2YzFjMTZlLTNhZGUtNDZmOC05MjQzLWM2NDgyZDcyOTFkNA==',
+
+giga = GigaChat(credentials=os.getenv(GIGACHAT_CREDENTIALS),
     model='GigaChat-2',
     verify_ssl_certs=False)
 
@@ -17,7 +21,7 @@ def extract_car_data(user_input: str) -> dict | None:
         - km (пробег в км, число округленное до целых)
         - region (регион эксплуатации, например: Ульяновск)
         - hp (лошадиные силы, число)
-        - consuption (расход топлива, литры)
+        - consumption (расход топлива, литры)
         - price (цена покупки, рубли)
         - kasko (если есть каско, то высчитай примерную цену каско на этот авто и заполни это поле)
 
@@ -43,4 +47,3 @@ def extract_car_data(user_input: str) -> dict | None:
         print(f"Ошибка GigaChat: {e}")
         return None
 
-print(extract_car_data("опель аСтра j 2011 1.6 115 145000 600000р каско есть 10 литров"))
