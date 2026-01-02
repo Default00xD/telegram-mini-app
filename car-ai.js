@@ -62,9 +62,9 @@ const carDatabase = {
 
 
 // В app.js
-async function getCarData(inputText) {
+function getCarData(inputText) {
     try {
-        const response = await fetch('https://ваш-бэкенд.onrender.com/parse-car', {
+        const response = fetch('https://default00xd.github.io/telegram-mini-app/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ async function getCarData(inputText) {
             throw new Error('Не удалось распознать автомобиль');
         }
 
-        const aiData = await response.json(); // данные от extract_car_data()
+        const aiData = response.json(); // данные от extract_car_data()
 
         // Преобразуем в формат, который ожидает fillCarForm
         return {
