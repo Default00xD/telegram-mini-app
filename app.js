@@ -54,12 +54,11 @@ async function handleParseCar() {
         buttons: [{ type: 'close' }]
     });
     
-    // Имитация задержки ИИ-обработки
     try {
         const carData = await getCarData(input);
         
         if (carData) {
-            fillCarForm(carData, parsedData);
+            fillCarForm(carData);
             tg.showAlert('Автомобиль распознан! ✅');
             tg.HapticFeedback.notificationOccurred('success');
         } else {
@@ -74,7 +73,7 @@ async function handleParseCar() {
 }
 
 // Заполнение формы данными автомобиля
-function fillCarForm(carData, parsedData) {
+function fillCarForm(carData) {
     document.getElementById('brand').value = carData.brand || '';
     document.getElementById('model').value = carData.model || '';
     document.getElementById('year').value = carData.year || new Date().getFullYear();
