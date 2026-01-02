@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()  # загружает переменные из .env
 
 
-giga = GigaChat(credentials=os.getenv(GIGACHAT_CREDENTIALS),
+giga = GigaChat(credentials=os.getenv("GIGACHAT_CREDENTIALS"),
     model='GigaChat-2',
     verify_ssl_certs=False)
 
