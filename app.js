@@ -93,24 +93,13 @@ async function handleParseCar() {
         return;
     }
     
-    tg.HapticFeedback.impactOccurred('medium');
-    tg.showPopup({
-        title: 'Распознавание...',
-        message: 'Анализирую описание автомобиля',
-        buttons: [{ type: 'close' }]
-    });
+    
     
     try {
+        console.log("func: handleParseCar/ start parse");
         const carData = await getCarData(input);
-        
-        if (carData) {
-            fillCarForm(carData);
-            tg.showAlert('Автомобиль распознан! ✅');
-            tg.HapticFeedback.notificationOccurred('success');
-        } else {
-            tg.showAlert('Не удалось распознать. Заполните поля вручную.');
-            tg.HapticFeedback.notificationOccurred('error');
-        }
+        console.log("func: handleParseCar/ end parse");
+
     } catch (error) {
         console.error(error);
         tg.showAlert('Ошибка при распознавании.');
