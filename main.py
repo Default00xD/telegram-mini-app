@@ -30,7 +30,7 @@ def get_giga_client():
             raise ValueError("❌ GIGACHAT_CREDENTIALS не задан в переменных окружения!")
         _giga_client = GigaChat(
             credentials=credentials,
-            model="GigaChat",  # ← не GigaChat-2!
+            model="GigaChat-2", 
             verify_ssl_certs=False
         )
     return _giga_client
