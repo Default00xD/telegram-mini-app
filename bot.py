@@ -26,7 +26,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
         [InlineKeyboardButton(
             "🚀 Открыть приложение",
-            web_app=WebAppInfo(url="https://your-domain.com/web/index.html")
+            web_app=WebAppInfo(url="")
         )]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
