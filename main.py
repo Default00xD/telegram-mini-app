@@ -68,7 +68,7 @@ async def parse_car(request: CarParseRequest):
             - parking (всегда 0)
 
             Если данные неизвестны - высчитай примерное значение по известным данным. ИСПОЛЬЗУЙ ТОЛЬКО АКТУАЛЬНЫЕ ДАННЫЕ ИЗ СЕТИ 2026 ГОД.
-            Отвечай ТОЛЬКО JSON, без пояснений.
+            ОТВЕЧАЙ ТОЛЬКО JSON, БЕЗ ПОЯСНЕНИЙ, БЕЗ КОММЕНТАРИЕВ, БЕЗ СЛЕШЕЙ, НИЧЕГО КРОМЕ JSON.
 
             Текст: {request.text}
         """
@@ -80,7 +80,7 @@ async def parse_car(request: CarParseRequest):
         if content.endswith("```"):
             content = content[:-3]
             
-        content = content.replace("None", "null")
+        
         return json.loads(content)
 
     except ValueError as e:
