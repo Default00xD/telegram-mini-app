@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
+print(".py init...")
 app = FastAPI()
 
 # CORS — ЗАМЕНИТЕ НА ВАШ URL
@@ -23,6 +23,7 @@ app.add_middleware(
 _giga_client = None
 
 def get_giga_client():
+    print(".py giga")
     global _giga_client
     if _giga_client is None:
         credentials = os.getenv("GIGACHAT_CREDENTIALS")
@@ -40,6 +41,7 @@ class CarParseRequest(BaseModel):
 
 @app.post("/parse-car")
 async def parse_car(request: CarParseRequest):
+    print(".py parse_car")
     try:
         giga = get_giga_client()  # ← инициализация здесь
         prompt = f"""

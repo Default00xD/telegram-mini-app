@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
+    console.log("init...:");
+
     // Обработчик кнопки распознавания
     const parseBtn = document.getElementById('parse-btn');
     const carInput = document.getElementById('car-input');
@@ -81,6 +83,8 @@ async function getCarData(inputText) {
 
 // Обработка распознавания автомобиля
 async function handleParseCar() {
+    console.log("func: handleParseCar");
+
     const input = document.getElementById('car-input').value.trim();
     
     if (!input) {
@@ -116,6 +120,8 @@ async function handleParseCar() {
 
 // Заполнение формы данными автомобиля
 function fillCarForm(carData) {
+    console.log("func: fillCarForm");
+
     document.getElementById('brand').value = carData.brand || '';
     document.getElementById('model').value = carData.model || '';
     document.getElementById('year').value = carData.year || new Date().getFullYear();
@@ -148,6 +154,8 @@ function fillCarForm(carData) {
 
 // Обработка расчета TCO
 function handleCalculate() {
+    console.log("func: handleCalculate");
+
     // Собираем данные из формы
     const carData = {
         brand: document.getElementById('brand').value,
@@ -189,6 +197,8 @@ function handleCalculate() {
 
 // Отображение результатов
 function displayResults(results, carData) {
+    console.log("func: displayResult");
+
     // Основные показатели
     document.getElementById('cost-per-km').textContent = formatCurrency(results.costPerKm) + '/км';
     document.getElementById('cost-per-month').textContent = formatCurrency(results.costPerMonth) + '/мес';
