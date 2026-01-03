@@ -99,17 +99,12 @@ async function handleParseCar() {
         tg.HapticFeedback.impactOccurred('light');
         return;
     }
-    
-    
-    
     try {
         console.log("func: handleParseCar/ start parse");
         const carData = await getCarData(input);
         console.log("Данные от бэкенда:", carData);
         console.log("func: handleParseCar/ end parse");
         fillCarForm(carData);
-
-
     } catch (error) {
         console.error(error);
         tg.showAlert('Ошибка при распознавании.');
@@ -121,33 +116,34 @@ async function handleParseCar() {
 function fillCarForm(carData) {
     console.log("func: fillCarForm");
 
-    document.getElementById('brand').value = carData.brand || '';
-    document.getElementById('model').value = carData.model || '';
-    document.getElementById('year').value = carData.year || new Date().getFullYear();
-    document.getElementById('hp').value = carData.hp || '';
-    document.getElementById('engine').value = carData.engine || '';
-    document.getElementById('consumption').value = carData.consumption?.toFixed(1) || '10.0';
+    document.getElementById('brand').value = carData.brand;
+    document.getElementById('model').value = carData.model;
+    document.getElementById('year').value = carData.year;
+    document.getElementById('hp').value = carData.hp;
+    document.getElementById('engine').value = carData.engine;
+    document.getElementById('consumption').value = carData.consumption;
+    document.getElementById('km').value = carData.km;
+    document.getElementById('annual_km').value = carData.annual_km;
+    document.getElementById('ownership').value = carData.ownership;
+    document.getElementById('price').value = carData.price;
+    document.getElementById('parking').value = carData.parking;
+    document.getElementById('region').value = carData.region;
+    document.getElementById('fuel_price').value = carData.fuel_price;
+    document.getElementById('osago').value = carData.osago;
+    document.getElementById('kasko').value = carData.kasko;
+    document.getElementById('fees').value = carData.fees;
+    document.getElementById('downtrend').value = carData.downtrend;
+    document.getElementById('service').value = carData.service;
+    document.getElementById('fixes').value = carData.fixes;
+
     
-    // Расчет пробега
-    const currentYear = new Date().getFullYear();
-    const carAge = carData.year ? currentYear - carData.year : 0;
-    const estimatedMileage = carAge * 20000;
-    document.getElementById('km').value = carData.km || estimatedMileage;
-    
-    document.getElementById('annual-mileage').value = 20000;
-    document.getElementById('ownership-years').value = 1;
-    document.getElementById('price').value = carData.price || '';
-    document.getElementById('parking-cost').value = 0;
-    
-    // Показываем карточку с деталями
     document.getElementById('car-details-card').style.display = 'block';
-    
     // Сохраняем данные
     currentCarData = {
         ...carData,
         region: document.getElementById('region').value,
-        ownershipYears: parseInt(document.getElementById('ownership-years').value),
-        annualMileage: parseInt(document.getElementById('annual-mileage').value)
+        ownershipYears: parseInt(document.getElementById('ownership').value),
+        annualMileage: parseInt(document.getElementById('annual_km').value)
     };
 }
 
@@ -164,12 +160,12 @@ function handleCalculate() {
         engineType: document.getElementById('engine').value,
         fuelConsumption: parseFloat(document.getElementById('consumption').value),
         mileage: parseInt(document.getElementById('km').value),
-        annualMileage: parseInt(document.getElementById('annual-mileage').value),
+        annualMileage: parseInt(document.getElementById('annual_km').value),
         region: document.getElementById('region').value,
         ownershipYears: parseInt(document.getElementById('ownership').value),
         purchasePrice: parseInt(document.getElementById('price').value),
         kaskoPrice: parseInt(document.getElementById('kasko').value),        
-        parkingCost: parseInt(document.getElementById('parking-cost').value)
+        parkingCost: parseInt(document.getElementById('parking').value)
     };
     
     
