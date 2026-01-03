@@ -78,7 +78,7 @@ async function getCarData(inputText) {
             fees: aiData.fees || null,
             downtrend: aiData.downtrend || null,
             service: aiData.service || null,
-            fixes: aiData.fixes || null,
+            fixes: aiData.fixes || null
         };
 
     } catch (error) {

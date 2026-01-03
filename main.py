@@ -72,7 +72,7 @@ async def parse_car(request: CarParseRequest):
         """
         response = giga.chat(prompt)
         content = response.choices[0].message.content.strip()
-        
+        print(content)
         if content.startswith("```json"):
             content = content[7:]
         if content.endswith("```"):
