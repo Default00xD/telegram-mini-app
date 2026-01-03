@@ -60,7 +60,7 @@ async function getCarData(inputText) {
         }
 
         const aiData = await response.json();
-
+        console.log("🔄 getCarData rescponce:", aiData);
         return {
             brand: aiData.brand || null,
             model: aiData.model || null,
@@ -72,6 +72,13 @@ async function getCarData(inputText) {
             engine: aiData.engine || null,
             region: aiData.region || null,
             kasko: aiData.kasko || null,
+            ownership: aiData.ownership || null,
+            fuel_price: aiData.fuel_price || null,
+            osago: aiData.osago || null,
+            fees: aiData.fees || null,
+            downtrend: aiData.downtrend || null,
+            service: aiData.service || null,
+            fixes: aiData.fixes || null,
         };
 
     } catch (error) {
