@@ -98,7 +98,10 @@ async function handleParseCar() {
     try {
         console.log("func: handleParseCar/ start parse");
         const carData = await getCarData(input);
+        console.log("Данные от бэкенда:", carData);
         console.log("func: handleParseCar/ end parse");
+        fillCarForm(carData);
+
 
     } catch (error) {
         console.error(error);
