@@ -153,27 +153,18 @@ function handleCalculate() {
         brand: document.getElementById('brand').value,
         model: document.getElementById('model').value,
         year: parseInt(document.getElementById('year').value),
-        power: parseInt(document.getElementById('power').value),
-        engineType: document.getElementById('engine-type').value,
-        fuelConsumption: parseFloat(document.getElementById('fuel-consumption').value),
-        mileage: parseInt(document.getElementById('mileage').value),
+        power: parseInt(document.getElementById('hp').value),
+        engineType: document.getElementById('engine').value,
+        fuelConsumption: parseFloat(document.getElementById('consumption').value),
+        mileage: parseInt(document.getElementById('km').value),
         annualMileage: parseInt(document.getElementById('annual-mileage').value),
         region: document.getElementById('region').value,
-        ownershipYears: parseInt(document.getElementById('ownership-years').value),
-        purchasePrice: parseInt(document.getElementById('purchase-price').value),
+        ownershipYears: parseInt(document.getElementById('ownership').value),
+        purchasePrice: parseInt(document.getElementById('price').value),
+        kaskoPrice: parseInt(document.getElementById('kasko').value),        
         parkingCost: parseInt(document.getElementById('parking-cost').value)
     };
     
-    // Валидация
-    if (!carData.brand || !carData.model || !carData.year) {
-        tg.showAlert('Заполните основные данные об автомобиле');
-        return;
-    }
-    
-    if (!carData.purchasePrice || carData.purchasePrice <= 0) {
-        tg.showAlert('Укажите цену покупки');
-        return;
-    }
     
     tg.HapticFeedback.impactOccurred('medium');
     
