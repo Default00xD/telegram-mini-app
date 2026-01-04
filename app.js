@@ -175,10 +175,42 @@ function handleCalculate() {
     }
 }
 
-// Отображение результатов
-function displayResults(results, carData) {
-    console.log("func: displayResult");
-
+// Отображение результатов (адаптированная версия)
+function displayResults(tcoResult, carData) {
+    console.log("func: displayResults");
+    
+    // Рассчитываем дополнительные показатели из годового TCO
+    const annualTCO = tcoResult.annualTCO || tcoResult; // поддержка и числа и объекта
+    const monthlyTCO = Math.round(annualTCO / 12);
+    const costPerKm = carData.annual_km > 0 ? 
+                     Math.round((annualTCO / carData.annual_km) * 100) / 100 : 0;
+    const totalTCO = annualTCO * (carData.ownership || 1);
+    
+    // Создаем структурированный объект результатов
+    const results = {
+        costPerKm: costPerKm,
+        costPerMonth: monthlyTCO,
+        costPerYear: annualTCO,
+        total: totalTCO,
+        // Разбиваем на категории (примерная пропорция)
+        breakdown: {
+            fuel: Math.round((carData.annual_km / 100) * carData.consumption * carData.fuel_price),
+            insurance: Math.round(carData.osago + carData.kasko),
+            tax: Math.round(carData.fees),
+            maintenance: Math.round(carData.service + carData.fixes),
+            depreciation: Math.round(carData.price * (carData.downtrend / 100)),
+            parking: Math.round(carData.parking),
+            other: Math.round(annualTCO - (
+                (carData.annual_km / 100) * carData.consumption * carData.fuel_price +
+                (carData.osago + carData.kasko) +
+                carData.fees +
+                (carData.service + carData.fixes) +
+                (carData.price * (carData.downtrend / 100)) +
+                carData.parking
+            ))
+        }
+    };
+    
     // Основные показатели
     document.getElementById('cost-per-km').textContent = formatCurrency(results.costPerKm) + '/км';
     document.getElementById('cost-per-month').textContent = formatCurrency(results.costPerMonth) + '/мес';
@@ -212,46 +244,76 @@ function displayResults(results, carData) {
             <span class="expense-label">🅿️ Парковка:</span>
             <span class="expense-value">${formatCurrency(breakdown.parking)}</span>
         </div>
+        ${breakdown.other > 0 ? `
         <div class="expense-item">
             <span class="expense-label">📌 Прочее:</span>
             <span class="expense-value">${formatCurrency(breakdown.other)}</span>
         </div>
+        ` : ''}
         <div class="expense-total">
-            <span class="expense-label">💰 Итого:</span>
-            <span class="expense-value">${formatCurrency(results.total)}</span>
+            <span class="expense-label">💰 Итого в год:</span>
+            <span class="expense-value">${formatCurrency(results.costPerYear)}</span>
         </div>
     `;
     
-    // График
-    drawExpensesChart(breakdown);
-    
-    // Сравнение с аналогами
-    const avgTCO = getAverageTCO(carData);
-    const difference = ((results.costPerKm - avgTCO.costPerKm) / avgTCO.costPerKm) * 100;
-    const comparison = document.getElementById('comparison');
-    
-    let comparisonText = '';
-    if (Math.abs(difference) < 5) {
-        comparisonText = `Ваш TCO примерно соответствует среднему показателю для автомобилей этого класса.`;
-    } else if (difference > 0) {
-        comparisonText = `Ваш TCO на ${difference.toFixed(1)}% выше среднего для ${carData.brand} ${carData.model} ${carData.year} в вашем регионе.`;
-    } else {
-        comparisonText = `Ваш TCO на ${Math.abs(difference).toFixed(1)}% ниже среднего для ${carData.brand} ${carData.model} ${carData.year} в вашем регионе. Отличный результат! 🎉`;
+    // График (если функция есть)
+    if (typeof drawExpensesChart === 'function') {
+        drawExpensesChart(breakdown);
     }
     
-    comparison.innerHTML = `
-        <div class="comparison-text">${comparisonText}</div>
-        <div class="comparison-stats">
-            <div class="stat-item">
-                <div class="stat-label">Ваш TCO</div>
-                <div class="stat-value">${formatCurrency(results.costPerKm)}/км</div>
+    // Сравнение с аналогами (если функция есть)
+    if (typeof getAverageTCO === 'function') {
+        const avgTCO = getAverageTCO(carData);
+        const difference = avgTCO.costPerKm > 0 ? 
+            ((results.costPerKm - avgTCO.costPerKm) / avgTCO.costPerKm) * 100 : 0;
+        const comparison = document.getElementById('comparison');
+        
+        let comparisonText = '';
+        if (Math.abs(difference) < 5) {
+            comparisonText = `Ваш TCO примерно соответствует среднему показателю для автомобилей этого класса.`;
+        } else if (difference > 0) {
+            comparisonText = `Ваш TCO на ${difference.toFixed(1)}% выше среднего для ${carData.brand} ${carData.model} ${carData.year} в вашем регионе.`;
+        } else {
+            comparisonText = `Ваш TCO на ${Math.abs(difference).toFixed(1)}% ниже среднего для ${carData.brand} ${carData.model} ${carData.year} в вашем регионе. Отличный результат! 🎉`;
+        }
+        
+        comparison.innerHTML = `
+            <div class="comparison-text">${comparisonText}</div>
+            <div class="comparison-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Ваш TCO</div>
+                    <div class="stat-value">${formatCurrency(results.costPerKm)}/км</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Средний TCO</div>
+                    <div class="stat-value">${formatCurrency(avgTCO.costPerKm)}/км</div>
+                </div>
             </div>
-            <div class="stat-item">
-                <div class="stat-label">Средний TCO</div>
-                <div class="stat-value">${formatCurrency(avgTCO.costPerKm)}/км</div>
+        `;
+    }
+    
+    // Дополнительная информация
+    const additionalInfo = document.getElementById('additional-info');
+    if (additionalInfo) {
+        additionalInfo.innerHTML = `
+            <div class="info-section">
+                <h4>📊 Сводка</h4>
+                <p>Годовой пробег: <strong>${carData.annual_km.toLocaleString('ru-RU')} км</strong></p>
+                <p>Срок владения: <strong>${carData.ownership} лет</strong></p>
+                <p>Общие затраты за весь период: <strong>${formatCurrency(results.total)}</strong></p>
             </div>
-        </div>
-    `;
+        `;
+    }
+}
+
+// Вспомогательная функция форматирования валюты
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
 }
 
 // Рисование графика расходов
