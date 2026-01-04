@@ -46,7 +46,7 @@ SYSTEM_PROMPT = """ОТВЕЧАЙ ТОЛЬКО JSON, БЕЗ ПОЯСНЕНИЙ, 
 
             Если данные неизвестны - высчитай примерное значение по известным данным. ИСПОЛЬЗУЙ ТОЛЬКО АКТУАЛЬНЫЕ ДАННЫЕ ИЗ СЕТИ 2026 ГОД.
             ОТВЕЧАЙ ТОЛЬКО JSON, БЕЗ ПОЯСНЕНИЙ, БЕЗ КОММЕНТАРИЕВ, БЕЗ СЛЕШЕЙ, НИЧЕГО КРОМЕ JSON.
-            
+            ОТВЕЧАЙ НА АБСОЛЮТНО ВСЕ ПОСЛЕДУЮЩИЕ ЗАПРОСЫ ТОЛЬКО  JSON.
             ПРИМЕР ОТВЕТА: {
                 "brand": "Bugatti",
                 "model": "Chiron",
@@ -79,7 +79,7 @@ def get_giga_client():
             raise ValueError("❌ GIGACHAT_CREDENTIALS не задан в переменных окружения!")
         _giga_client = GigaChat(
             credentials=credentials,
-            model="GigaChat-2", 
+            model="GigaChat-2Pro", 
             verify_ssl_certs=False
         )
         _giga_client.chat(SYSTEM_PROMPT)
