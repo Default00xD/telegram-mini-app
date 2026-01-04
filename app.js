@@ -198,17 +198,9 @@ function displayResults(tcoResult, carData) {
             insurance: Math.round(carData.osago + carData.kasko),
             tax: Math.round(carData.fees),
             maintenance: Math.round(carData.service + carData.fixes),
-            depreciation: Math.round(carData.price * (carData.downtrend / 100)),
+            depreciation: Math.round(carData.downtrend),
             parking: Math.round(carData.parking),
-            other: Math.round(annualTCO - (
-                (carData.annual_km / 100) * carData.consumption * carData.fuel_price +
-                (carData.osago + carData.kasko) +
-                carData.fees +
-                (carData.service + carData.fixes) +
-                (carData.price * (carData.downtrend / 100)) +
-                carData.parking
-            ))
-        }
+            }
     };
     
     // Основные показатели
@@ -244,12 +236,6 @@ function displayResults(tcoResult, carData) {
             <span class="expense-label">🅿️ Парковка:</span>
             <span class="expense-value">${formatCurrency(breakdown.parking)}</span>
         </div>
-        ${breakdown.other > 0 ? `
-        <div class="expense-item">
-            <span class="expense-label">📌 Прочее:</span>
-            <span class="expense-value">${formatCurrency(breakdown.other)}</span>
-        </div>
-        ` : ''}
         <div class="expense-total">
             <span class="expense-label">💰 Итого в год:</span>
             <span class="expense-value">${formatCurrency(results.costPerYear)}</span>
@@ -332,8 +318,7 @@ function drawExpensesChart(breakdown) {
         breakdown.tax,
         breakdown.maintenance,
         breakdown.depreciation,
-        breakdown.parking,
-        breakdown.other
+        breakdown.parking
     ];
     
     expensesChart = new Chart(ctx, {
