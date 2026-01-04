@@ -138,7 +138,13 @@ function fillCarForm(carData) {
 
     
     document.getElementById('car-details-card').style.display = 'block';
-    // Сохраняем данные
+
+}
+
+// Обработка расчета TCO
+function handleCalculate() {
+    console.log("func: handleCalculate");
+
     currentCarData = {
         brand: document.getElementById('brand').value.trim(),
         model: document.getElementById('model').value.trim(),
@@ -160,16 +166,11 @@ function fillCarForm(carData) {
         service: parseFloat(document.getElementById('service').value) || 0,
         fixes: parseFloat(document.getElementById('fixes').value) || 0
     };
-}
 
-// Обработка расчета TCO
-function handleCalculate() {
-    console.log("func: handleCalculate");
-    carData = currentCarData;
-    tcoResults = calculateTCO(carData);
+    tcoResults = calculateTCO(currentCarData);
     
     if (tcoResults) {
-        displayResults(tcoResults, carData);
+        displayResults(tcoResults, currentCarData);
         showResultsSection();
     }
 }

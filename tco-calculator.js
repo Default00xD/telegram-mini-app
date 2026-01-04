@@ -18,12 +18,14 @@ function calculateTCO(carData) {
     tco = annual_km / 100 * consumption * fuel_price + osago + kasko + service + fixes + downtrend + fees + parking
     console.log("func: tco = ", tco);
     console.log("func: tco data = ", currentCarData);
+
+    return tco;
     
 }
 
 // Получение среднего TCO для сравнения
 function getAverageTCO(carData) {
-   
+   return 0;
 }
 
 // Экспорт функций
