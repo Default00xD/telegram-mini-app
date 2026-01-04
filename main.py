@@ -68,6 +68,8 @@ SYSTEM_PROMPT = """ОТВЕЧАЙ ТОЛЬКО JSON, БЕЗ ПОЯСНЕНИЙ, 
                 "annual_km": 10000,
                 "parking": 50000
                 }
+
+                ТЕКСТ ДЛЯ ОБРАБОТКИ: 
                 """
 
 def get_giga_client():
@@ -82,7 +84,6 @@ def get_giga_client():
             model="GigaChat-2Pro", 
             verify_ssl_certs=False
         )
-        _giga_client.chat(SYSTEM_PROMPT)
     return _giga_client
 
 class CarParseRequest(BaseModel):
@@ -93,7 +94,7 @@ async def parse_car(request: CarParseRequest):
     print(".py parse_car")
     try:
         giga = get_giga_client()  # ← инициализация здесь
-        response = giga.chat(request.text)
+        response = giga.chat(SYSTEM_PROMPT + request.text)
         content = response.choices[0].message.content.strip()
         print("content-", str(content))
         if content.startswith("```json"):
