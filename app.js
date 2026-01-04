@@ -140,39 +140,32 @@ function fillCarForm(carData) {
     document.getElementById('car-details-card').style.display = 'block';
     // Сохраняем данные
     currentCarData = {
-        ...carData,
-        region: document.getElementById('region').value,
-        ownershipYears: parseInt(document.getElementById('ownership').value),
-        annualMileage: parseInt(document.getElementById('annual_km').value)
+        brand: document.getElementById('brand').value.trim(),
+        model: document.getElementById('model').value.trim(),
+        year: parseInt(document.getElementById('year').value) || 0,
+        hp: parseInt(document.getElementById('hp').value) || 0,
+        engine: parseFloat(document.getElementById('engine').value) || 0,
+        consumption: parseFloat(document.getElementById('consumption').value) || 0,
+        km: parseInt(document.getElementById('km').value) || 0,
+        annual_km: parseInt(document.getElementById('annual_km').value) || 0,
+        ownership: parseInt(document.getElementById('ownership').value) || 0,
+        price: parseFloat(document.getElementById('price').value) || 0,
+        parking: parseFloat(document.getElementById('parking').value) || 0,
+        region: document.getElementById('region').value.trim(),
+        fuel_price: parseFloat(document.getElementById('fuel_price').value) || 0,
+        osago: parseFloat(document.getElementById('osago').value) || 0,
+        kasko: parseFloat(document.getElementById('kasko').value) || 0,
+        fees: parseFloat(document.getElementById('fees').value) || 0,
+        downtrend: parseFloat(document.getElementById('downtrend').value) || 0,
+        service: parseFloat(document.getElementById('service').value) || 0,
+        fixes: parseFloat(document.getElementById('fixes').value) || 0
     };
 }
 
 // Обработка расчета TCO
 function handleCalculate() {
     console.log("func: handleCalculate");
-
-    // Собираем данные из формы
-    const carData = {
-        brand: document.getElementById('brand').value,
-        model: document.getElementById('model').value,
-        year: parseInt(document.getElementById('year').value),
-        power: parseInt(document.getElementById('hp').value),
-        engineType: document.getElementById('engine').value,
-        fuelConsumption: parseFloat(document.getElementById('consumption').value),
-        mileage: parseInt(document.getElementById('km').value),
-        annualMileage: parseInt(document.getElementById('annual_km').value),
-        region: document.getElementById('region').value,
-        ownershipYears: parseInt(document.getElementById('ownership').value),
-        purchasePrice: parseInt(document.getElementById('price').value),
-        kaskoPrice: parseInt(document.getElementById('kasko').value),        
-        parkingCost: parseInt(document.getElementById('parking').value)
-    };
-    
-    
-    tg.HapticFeedback.impactOccurred('medium');
-    
-    // Расчет TCO
-    currentCarData = carData;
+    carData = currentCarData;
     tcoResults = calculateTCO(carData);
     
     if (tcoResults) {
