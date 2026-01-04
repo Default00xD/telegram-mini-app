@@ -14,7 +14,7 @@ function calculateTCO(carData) {
         fees = 0,                // налоги и сборы в год
         parking = 0              // парковка в год
     } = currentCarData;
-    const tco = 0;
+    let tco = 0;
     tco = annual_km / 100 * consumption * fuel_price + osago + kasko + service + fixes + downtrend + fees + parking
     console.log("func: tco = ", tco);
     console.log("func: tco data = ", currentCarData);
