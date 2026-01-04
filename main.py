@@ -21,31 +21,7 @@ app.add_middleware(
 
 # Глобальная переменная (будет инициализирована при первом запросе)
 _giga_client = None
-
-def get_giga_client():
-    print(".py giga")
-    global _giga_client
-    if _giga_client is None:
-        credentials = os.getenv("GIGACHAT_CREDENTIALS")
-        if not credentials:
-            raise ValueError("❌ GIGACHAT_CREDENTIALS не задан в переменных окружения!")
-        _giga_client = GigaChat(
-            credentials=credentials,
-            model="GigaChat-2", 
-            verify_ssl_certs=False
-        )
-    return _giga_client
-
-class CarParseRequest(BaseModel):
-    text: str
-
-@app.post("/parse-car")
-async def parse_car(request: CarParseRequest):
-    print(".py parse_car")
-    try:
-        giga = get_giga_client()  # ← инициализация здесь
-        prompt = f"""
-            ОТВЕЧАЙ ТОЛЬКО JSON, БЕЗ ПОЯСНЕНИЙ, БЕЗ КОММЕНТАРИЕВ, ТОЛЬКО JSON.
+SYSTEM_PROMPT = """ОТВЕЧАЙ ТОЛЬКО JSON, БЕЗ ПОЯСНЕНИЙ, БЕЗ КОММЕНТАРИЕВ, ТОЛЬКО JSON.
             Ты — помощник по извлечению структурированных данных из текста.
             Извлеки из следующего текста информацию об автомобиле в формате JSON с полями:
             - brand (марка, например: Toyota)
@@ -62,7 +38,7 @@ async def parse_car(request: CarParseRequest):
             - osago (расчитай самостоятельно примерную цену осаго с учетом региона и стажа и остальных факторов)
             - kasko (если упомянуто - примерная цена каско для этой машины. если нет данных - 0)
             - fees (расчитай сумму всех налогов для данного автомобиля за год)
-            - downtrend (расчитай примерное снижение стоимости данного автомобиля за год в рублях, для авто страше 5 лет снижение 3%, для молодых - снижение 5%)
+            - downtrend (расчитай примерное снижение стоимости данного автомобиля за год в рублях, для авто страше 5 лет снижение 3%, для молодых - снижение 5% от стоимости. В рублях)
             - service (расчитай примерную стоимость технического обслуживания данного автомобиля за год)
             - fixes (расчитай примерную стоимость незапланированных ремонтов характерных для этого автомобиля за год)
             - annual_km (расчитай примерный пробег данного автомобиля за год)
@@ -70,10 +46,54 @@ async def parse_car(request: CarParseRequest):
 
             Если данные неизвестны - высчитай примерное значение по известным данным. ИСПОЛЬЗУЙ ТОЛЬКО АКТУАЛЬНЫЕ ДАННЫЕ ИЗ СЕТИ 2026 ГОД.
             ОТВЕЧАЙ ТОЛЬКО JSON, БЕЗ ПОЯСНЕНИЙ, БЕЗ КОММЕНТАРИЕВ, БЕЗ СЛЕШЕЙ, НИЧЕГО КРОМЕ JSON.
+            
+            ПРИМЕР ОТВЕТА: {
+                "brand": "Bugatti",
+                "model": "Chiron",
+                "year": 2023,
+                "ownership": 1,
+                "hp": 1578,
+                "engine": "8.0 W16",
+                "km": 60000,
+                "region": "Москва",
+                "consumption": 24,
+                "fuel_price": 94,
+                "price": 320000000,
+                "osago": 12000,
+                "kasko": 25000000,
+                "fees": 900000,
+                "downtrend": 960000,
+                "service": 8000000,
+                "fixes": 5000000,
+                "annual_km": 10000,
+                "parking": 50000
+                }
+                """
 
-            Текст: {request.text}
-        """
-        response = giga.chat(prompt)
+def get_giga_client():
+    print(".py giga")
+    global _giga_client
+    if _giga_client is None:
+        credentials = os.getenv("GIGACHAT_CREDENTIALS")
+        if not credentials:
+            raise ValueError("❌ GIGACHAT_CREDENTIALS не задан в переменных окружения!")
+        _giga_client = GigaChat(
+            credentials=credentials,
+            model="GigaChat-2", 
+            verify_ssl_certs=False
+        )
+        _giga_client.chat(SYSTEM_PROMPT)
+    return _giga_client
+
+class CarParseRequest(BaseModel):
+    text: str
+
+@app.post("/parse-car")
+async def parse_car(request: CarParseRequest):
+    print(".py parse_car")
+    try:
+        giga = get_giga_client()  # ← инициализация здесь
+        response = giga.chat(request.text)
         content = response.choices[0].message.content.strip()
         print("content-", str(content))
         if content.startswith("```json"):
