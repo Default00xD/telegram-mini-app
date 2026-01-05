@@ -1,4 +1,3 @@
-// storage.js - создайте новый файл
 class CarStorage {
     constructor() {
         this.userId = window.Telegram.WebApp.initDataUnsafe?.user?.id;

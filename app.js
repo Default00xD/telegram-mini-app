@@ -1,4 +1,3 @@
-// Инициализация Telegram Web App
 const tg = window.Telegram.WebApp;
 const carStorage = new CarStorage();
 tg.ready();
