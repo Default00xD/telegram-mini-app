@@ -112,7 +112,7 @@ async def parse_car(request: CarParseRequest):
                                         "service": 20000,
                                         "fixes": 40000,
                                         "annual_km": 20000,
-                                        "parking": 0
+                                        "parking": 0,
                                         "brand": "Opel"
                                     }```'''  
         else:
