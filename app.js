@@ -83,7 +83,7 @@ function initializeApp() {
                     tg.showAlert('✅ Добавлено в избранное');
                     
                     // Отправляем в глобальную статистику (Firestore)
-                    await sendToGlobalStats(currentCarData);
+                    //await sendToGlobalStats(currentCarData);
                 }
             } else {
                 // Удаляем лайк
