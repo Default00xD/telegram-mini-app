@@ -1,5 +1,4 @@
 const tg = window.Telegram.WebApp;
-const carStorage = new CarStorage();
 tg.ready();
 tg.expand();
 // Состояние приложения
