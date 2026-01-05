@@ -140,6 +140,3 @@ class CarStorage {
         };
     }
 }
-
-// Экспортируем глобальный экземпляр
-const carStorage = new CarStorage();
