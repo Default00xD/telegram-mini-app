@@ -1,101 +1,191 @@
-// storage.js
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
+
+// Initialize Firebase
+
+
 class CarStorage {
     constructor() {
-        this.userId = 'user_' + (Math.random().toString(36).substr(2, 9));
+        this.userId = this.getOrCreateUserId();
         this.STORAGE_KEY = 'user_cars_v1';
-        this.isTelegram = this.checkTelegramEnvironment();
+        this.firebaseInitialized = false;
+        this.isTelegram = !!(window.Telegram && window.Telegram.WebApp);
+        
+        // Конфигурация Firebase (ЗАМЕНИТЕ НА СВОЮ!)
+        this.firebaseConfig = {
+            apiKey: "AIzaSyDwbPDXG5_PPHho1jNbjMe7IZqlOwEDhTA",
+            authDomain: "mr-lab6.firebaseapp.com",
+            databaseURL: "https://mr-lab6-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "mr-lab6",
+            storageBucket: "mr-lab6.firebasestorage.app",
+            messagingSenderId: "544827431054",
+            appId: "1:544827431054:web:4458511ad7ffeca890d1df",
+            measurementId: "G-Z82RPL01PN"
+        };
+        this.initFirebase();
     }
 
-    // Проверяем, запущены ли в Telegram
-    checkTelegramEnvironment() {
-        return !!(window.Telegram && window.Telegram.WebApp && 
-                 window.Telegram.WebApp.initDataUnsafe);
-    }
-
-    // Универсальный метод получения данных - ФИКС ВОТ ЗДЕСЬ
-    async getItem(key) {
-        if (this.isTelegram && window.Telegram.WebApp.CloudStorage) {
-            try {
-                const result = await window.Telegram.WebApp.CloudStorage.getItem(key);
-                
-                // Telegram может вернуть объект или строку
-                if (typeof result === 'object' && result !== null) {
-                    // Если это объект {key: value}, берем значение
-                    if (result[key]) {
-                        return result[key];
-                    }
-                    // Или если это просто объект, преобразуем в строку
-                    return JSON.stringify(result);
-                }
-                
-                return result; // это строка или undefined
-                
-            } catch (error) {
-                console.warn("Telegram CloudStorage error, fallback to localStorage:", error);
-                return localStorage.getItem(key);
+    // Генерация/получение UserID
+    getOrCreateUserId() {
+        let userId = localStorage.getItem('car_storage_user_id');
+        
+        if (!userId) {
+            // Если в Telegram - используем Telegram ID
+            if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+                userId = 'tg_' + window.Telegram.WebApp.initDataUnsafe.user.id;
+            } else {
+                // Генерируем случайный ID
+                userId = 'user_' + Math.random().toString(36).substr(2, 9);
             }
-        } else {
-            // Fallback для браузера или старого Telegram
-            return localStorage.getItem(key);
+            localStorage.setItem('car_storage_user_id', userId);
+        }
+        
+        return userId;
+    }
+
+    // Инициализация Firebase
+    async initFirebase() {
+        try {
+            // Проверяем, не инициализирован ли Firebase уже
+            if (typeof firebase === 'undefined') {
+                console.warn("Firebase not loaded");
+                return false;
+            }
+            
+            // Инициализируем Firebase
+            if (!firebase.apps.length) {
+                firebase.initializeApp(this.firebaseConfig);
+            }
+            
+            this.db = firebase.firestore();
+            this.firebaseInitialized = true;
+            
+            console.log("🔥 Firebase initialized successfully");
+            return true;
+        } catch (error) {
+            console.error("❌ Firebase init error:", error);
+            this.firebaseInitialized = false;
+            return false;
         }
     }
 
-    // Универсальный метод сохранения данных
-    async setItem(key, value) {
-        if (this.isTelegram && window.Telegram.WebApp.CloudStorage) {
-            try {
-                await window.Telegram.WebApp.CloudStorage.setItem(key, value);
-                // Дублируем в localStorage для надежности
-                localStorage.setItem(key, value);
-            } catch (error) {
-                console.warn("Telegram CloudStorage error, fallback to localStorage:", error);
-                localStorage.setItem(key, value);
+    // ========== FIRESTORE МЕТОДЫ ==========
+
+    // Получить данные пользователя из Firestore
+    async getFromFirestore() {
+        if (!this.firebaseInitialized || !this.db) {
+            return null;
+        }
+
+        try {
+            const docRef = this.db.collection('users').doc(this.userId);
+            const doc = await docRef.get();
+            
+            if (doc.exists) {
+                console.log("🔥 Firestore data found:", doc.data());
+                return doc.data();
+            } else {
+                console.log("🔥 No data in Firestore, returning null");
+                return null;
             }
-        } else {
-            localStorage.setItem(key, value);
+        } catch (error) {
+            console.error("❌ Firestore get error:", error);
+            return null;
         }
     }
 
-    // ========== ОСНОВНЫЕ МЕТОДЫ (ИСПРАВЛЕННЫЕ) ==========
+    // Сохранить данные в Firestore
+    async saveToFirestore(data) {
+        if (!this.firebaseInitialized || !this.db) {
+            return false;
+        }
 
-    // Получить все данные - ФИКС ПАРСИНГА
+        try {
+            const docRef = this.db.collection('users').doc(this.userId);
+            await docRef.set({
+                ...data,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                userId: this.userId,
+                lastSync: new Date().toISOString()
+            }, { merge: true });
+            
+            console.log("🔥 Data saved to Firestore");
+            return true;
+        } catch (error) {
+            console.error("❌ Firestore save error:", error);
+            return false;
+        }
+    }
+
+    // Удалить данные из Firestore
+    async deleteFromFirestore() {
+        if (!this.firebaseInitialized || !this.db) {
+            return false;
+        }
+
+        try {
+            const docRef = this.db.collection('users').doc(this.userId);
+            await docRef.delete();
+            console.log("🔥 Data deleted from Firestore");
+            return true;
+        } catch (error) {
+            console.error("❌ Firestore delete error:", error);
+            return false;
+        }
+    }
+
+    // ========== ГИБРИДНЫЕ МЕТОДЫ (Firestore + localStorage) ==========
+
+    // Получить все данные (приоритет у Firestore)
     async getAllData() {
         try {
-            const stored = await this.getItem(this.STORAGE_KEY);
-            
-            console.log("📦 Raw storage data:", stored, "Type:", typeof stored);
-            
-            // Если ничего нет
-            if (!stored || stored === 'undefined' || stored === 'null') {
-                return this.getDefaultData();
-            }
-            
-            // Если это уже объект (Telegram вернул объект)
-            if (typeof stored === 'object') {
-                console.log("📦 Telegram returned object, using as is");
-                return stored.likedCars ? stored : this.getDefaultData();
-            }
-            
-            // Пытаемся распарсить строку
-            try {
-                const parsed = JSON.parse(stored);
-                return parsed.likedCars ? parsed : this.getDefaultData();
-            } catch (parseError) {
-                console.error("❌ JSON parse error:", parseError, "Data:", stored);
-                
-                // Пробуем очистить строку
-                const cleaned = this.tryFixJson(stored);
-                if (cleaned) {
-                    return cleaned;
+            // 1. Пытаемся получить из Firestore
+            if (this.firebaseInitialized) {
+                const firestoreData = await this.getFromFirestore();
+                if (firestoreData) {
+                    console.log("📦 Using Firestore data");
+                    return this.normalizeData(firestoreData);
                 }
-                
-                return this.getDefaultData();
             }
+            
+            // 2. Fallback: localStorage
+            const localData = localStorage.getItem(this.STORAGE_KEY);
+            console.log("📦 Fallback to localStorage:", localData);
+            
+            if (localData && localData !== 'undefined' && localData !== 'null') {
+                try {
+                    const parsed = JSON.parse(localData);
+                    return this.normalizeData(parsed);
+                } catch (e) {
+                    console.warn("❌ LocalStorage parse error:", e);
+                }
+            }
+            
+            // 3. Возвращаем дефолтные данные
+            return this.getDefaultData();
             
         } catch (error) {
-            console.error("❌ Ошибка в getAllData:", error);
+            console.error("❌ Error in getAllData:", error);
             return this.getDefaultData();
         }
+    }
+
+    // Нормализация данных
+    normalizeData(data) {
+        return {
+            userId: data.userId || this.userId,
+            likedCars: Array.isArray(data.likedCars) ? data.likedCars : [],
+            settings: data.settings || {},
+            createdAt: data.createdAt || new Date().toISOString(),
+            updatedAt: data.updatedAt || new Date().toISOString()
+        };
     }
 
     // Дефолтные данные
@@ -104,42 +194,38 @@ class CarStorage {
             userId: this.userId,
             likedCars: [],
             settings: {},
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
         };
     }
 
-    // Попытка починить сломанный JSON
-    tryFixJson(brokenJson) {
-        try {
-            // Убираем лишние кавычки
-            let fixed = brokenJson
-                .replace(/^"{/, '{')
-                .replace(/}"$/, '}')
-                .replace(/\\"/g, '"')
-                .replace(/\\\\/g, '\\');
-            
-            return JSON.parse(fixed);
-        } catch (error) {
-            console.warn("Не удалось починить JSON");
-            return null;
-        }
-    }
-
-    // Сохранить все данные
+    // Сохранить все данные (в оба хранилища)
     async saveAllData(data) {
         try {
-            // Всегда сохраняем как строку JSON
-            const jsonString = JSON.stringify(data);
+            // Нормализуем данные
+            const normalizedData = this.normalizeData(data);
+            const jsonString = JSON.stringify(normalizedData);
             
             console.log("💾 Saving data, size:", jsonString.length, "chars");
             
-            // Проверяем размер
-            if (jsonString.length > 4000) {
-                console.warn("⚠️ Данные почти достигли лимита!", jsonString.length);
-                data.likedCars = data.likedCars.slice(-20);
+            // 1. Сохраняем в localStorage
+            localStorage.setItem(this.STORAGE_KEY, jsonString);
+            
+            // 2. Пытаемся сохранить в Firestore
+            if (this.firebaseInitialized) {
+                const firestoreSuccess = await this.saveToFirestore(normalizedData);
+                console.log("Firestore save:", firestoreSuccess ? "✅" : "❌");
             }
             
-            await this.setItem(this.STORAGE_KEY, jsonString);
+            // 3. Если в Telegram - сохраняем и туда (для совместимости)
+            if (this.isTelegram && window.Telegram.WebApp.CloudStorage) {
+                try {
+                    await window.Telegram.WebApp.CloudStorage.setItem(this.STORAGE_KEY, jsonString);
+                } catch (tgError) {
+                    console.warn("Telegram CloudStorage error:", tgError);
+                }
+            }
+            
             console.log("✅ Data saved successfully");
             return true;
             
@@ -148,6 +234,8 @@ class CarStorage {
             return false;
         }
     }
+
+    // ========== ОСНОВНЫЕ МЕТОДЫ ==========
 
     // Сохранить лайкнутую машину
     async saveLikedCar(carData) {
@@ -195,6 +283,7 @@ class CarStorage {
             const data = await this.getAllData();
             console.log("📚 Retrieved liked cars:", data.likedCars.length);
             
+            // Сортируем по дате обновления (сначала новые)
             return data.likedCars.sort((a, b) => 
                 new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
             );
@@ -251,13 +340,30 @@ class CarStorage {
     // Очистить все данные
     async clearAllData() {
         try {
-            await this.removeItem(this.STORAGE_KEY);
+            // Удаляем из всех хранилищ
             localStorage.removeItem(this.STORAGE_KEY);
+            localStorage.removeItem('car_storage_user_id');
+            
+            if (this.firebaseInitialized) {
+                await this.deleteFromFirestore();
+            }
+            
+            if (this.isTelegram && window.Telegram.WebApp.CloudStorage) {
+                try {
+                    await window.Telegram.WebApp.CloudStorage.removeItem(this.STORAGE_KEY);
+                } catch (tgError) {
+                    console.warn("Telegram remove error:", tgError);
+                }
+            }
+            
+            // Генерируем новый user ID
+            this.userId = this.getOrCreateUserId();
+            
             console.log("🧹 All data cleared");
             return { success: true };
         } catch (error) {
             console.error("❌ Ошибка очистки:", error);
-            return { success: false };
+            return { success: false, error };
         }
     }
 
@@ -270,11 +376,12 @@ class CarStorage {
             return {
                 totalCars: data.likedCars.length,
                 storageUsed: jsonString.length,
-                storageLimit: 4096,
-                usagePercent: Math.round((jsonString.length / 4096) * 100),
+                storageLimit: 'unlimited', // Firestore имеет большие лимиты
                 environment: this.isTelegram ? 'Telegram' : 'Browser',
                 userId: this.userId,
-                hasTelegramStorage: !!(window.Telegram?.WebApp?.CloudStorage)
+                firebaseAvailable: this.firebaseInitialized,
+                firestoreEnabled: true,
+                syncStatus: this.firebaseInitialized ? 'active' : 'local-only'
             };
         } catch (error) {
             return {
@@ -284,25 +391,77 @@ class CarStorage {
             };
         }
     }
+
+    // Синхронизация данных
+    async syncData() {
+        try {
+            console.log("🔄 Starting data sync...");
+            
+            // Получаем локальные данные
+            const localData = localStorage.getItem(this.STORAGE_KEY);
+            const localParsed = localData ? JSON.parse(localData) : null;
+            
+            // Получаем данные из Firestore
+            const firestoreData = await this.getFromFirestore();
+            
+            if (!firestoreData && localParsed) {
+                // Если в Firestore нет данных, но есть локально - сохраняем в Firestore
+                console.log("⬆️ Uploading local data to Firestore");
+                await this.saveToFirestore(localParsed);
+                return { action: 'uploaded', success: true };
+            } else if (firestoreData && localParsed) {
+                // Сравниваем даты обновления
+                const firestoreDate = new Date(firestoreData.updatedAt || 0);
+                const localDate = new Date(localParsed.updatedAt || 0);
+                
+                if (firestoreDate > localDate) {
+                    // Firestore новее - загружаем оттуда
+                    console.log("⬇️ Downloading from Firestore (newer)");
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(firestoreData));
+                    return { action: 'downloaded', success: true };
+                } else if (localDate > firestoreDate) {
+                    // Локальные данные новее - сохраняем в Firestore
+                    console.log("⬆️ Uploading to Firestore (local newer)");
+                    await this.saveToFirestore(localParsed);
+                    return { action: 'uploaded', success: true };
+                } else {
+                    // Данные одинаковые
+                    console.log("✅ Data already in sync");
+                    return { action: 'already-synced', success: true };
+                }
+            }
+            
+            return { action: 'no-action', success: true };
+            
+        } catch (error) {
+            console.error("❌ Sync error:", error);
+            return { success: false, error: error.message };
+        }
+    }
 }
 
 // Создаем экземпляр только если его еще нет
 if (typeof window.carStorage === 'undefined') {
     window.carStorage = new CarStorage();
-    console.log("🚀 CarStorage initialized");
+    console.log("🚀 CarStorage with Firebase initialized");
     
-    // Тестовая функция для проверки
+    // Тестовая функция
     window.testStorage = async function() {
         console.log("🧪 Testing storage...");
         const stats = await carStorage.getStorageStats();
         console.log("📊 Storage stats:", stats);
+        
+        // Тест синхронизации
+        const syncResult = await carStorage.syncData();
+        console.log("🔄 Sync result:", syncResult);
         
         // Добавляем тестовую машину
         const testCar = {
             brand: "Test",
             model: "Car",
             year: 2024,
-            price: 1000000
+            price: 1000000,
+            color: "red"
         };
         
         const saveResult = await carStorage.saveLikedCar(testCar);
@@ -311,6 +470,6 @@ if (typeof window.carStorage === 'undefined') {
         const cars = await carStorage.getLikedCars();
         console.log("📚 Cars in storage:", cars);
         
-        return { stats, saveResult, cars };
+        return { stats, syncResult, saveResult, cars };
     };
 }
