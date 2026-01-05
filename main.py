@@ -94,8 +94,30 @@ async def parse_car(request: CarParseRequest):
     print(".py parse_car")
     try:
         giga = get_giga_client()  # ← инициализация здесь
-        response = giga.chat(SYSTEM_PROMPT + request.text)
-        content = response.choices[0].message.content.strip()
+        if request.text == "1":
+            content = '''```json {"model": "Astra",
+                                        "year": 2011,
+                                        "ownership": 15,
+                                        "fuel_price": 94,
+                                        "hp": 165,
+                                        "price": 300000,
+                                        "engine": "1.6 Turbo",
+                                        "osago": 4500,
+                                        "km": 300000,
+                                        "region": "Москва",
+                                        "kasko": 25000,
+                                        "consumption": 7.5,
+                                        "fees": 4500,
+                                        "downtrend": 9000,
+                                        "service": 20000,
+                                        "fixes": 40000,
+                                        "annual_km": 20000,
+                                        "parking": 0
+                                        "brand": "Opel",
+                                    }```'''  
+        else:
+            response = giga.chat(SYSTEM_PROMPT + request.text)
+            content = response.choices[0].message.content.strip()
         print("content-", str(content))
         if content.startswith("```json"):
             content = content[7:]
