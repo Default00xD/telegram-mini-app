@@ -289,6 +289,105 @@ body.dark-theme {
     color: var(--tg-theme-text-color, #ffffff);
 }
 
+/* СТИЛИ ДЛЯ КАРТОЧКИ */
+.car-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.car-header h2 {
+    font-size: 18px;
+    margin: 0;
+    color: var(--tg-theme-text-color, #000000);
+}
+
+.like-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.like-icon {
+    width: 24px;
+    height: 24px;
+    fill: var(--tg-theme-hint-color, #999999);
+}
+
+.like-btn.active .like-icon {
+    fill: #ff4757;
+}
+
+.car-image-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    background: var(--tg-theme-hint-color, #e0e0e0);
+}
+
+.car-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.car-image-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--tg-theme-text-color, #000000);
+    font-size: 14px;
+}
+
+.car-specs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.spec-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+}
+
+.spec-label {
+    font-weight: 500;
+    color: var(--tg-theme-text-color, #000000);
+    font-size: 14px;
+}
+
+.spec-value {
+    font-weight: 600;
+    color: var(--tg-theme-text-color, #000000);
+    font-size: 14px;
+}
+
+/* Темная тема */
+body.dark-theme .car-image-container {
+    background: #333;
+}
+
+body.dark-theme .spec-label,
+body.dark-theme .spec-value {
+    color: var(--tg-theme-text-color, #ffffff);
+}
+
+body.dark-theme .spec-item {
+    border-bottom-color: #444;
+}
+
 /* Адаптивность */
 @media (max-width: 480px) {
     .form-row {

@@ -34,6 +34,14 @@ function initializeApp() {
     document.getElementById('back-btn').addEventListener('click', function() {
         showInputSection();
     });
+
+    const likeBtn = document.getElementById('like-btn');
+    if (likeBtn) {
+        likeBtn.addEventListener('click', function() {
+            this.classList.toggle('active');
+            tg.HapticFeedback.impactOccurred('light');
+        });
+    }
     
     // Настройка Telegram кнопки
     tg.MainButton.hide();
@@ -62,23 +70,23 @@ async function getCarData(inputText) {
         const aiData = await response.json();
         console.log("🔄 getCarData rescponce:", aiData);
         return {
-            brand: aiData.brand || null,
-            model: aiData.model || null,
-            year: aiData.year || null,
-            hp: aiData.hp || null,
-            consumption: aiData.consumption || null,
-            km: aiData.km || null,
-            price: aiData.price || null,
-            engine: aiData.engine || null,
-            region: aiData.region || null,
-            kasko: aiData.kasko || null,
-            ownership: aiData.ownership || null,
-            fuel_price: aiData.fuel_price || null,
-            osago: aiData.osago || null,
-            fees: aiData.fees || null,
-            downtrend: aiData.downtrend || null,
-            service: aiData.service || null,
-            fixes: aiData.fixes || null
+            brand: aiData.brand || "Lada",
+            model: aiData.model || "Granta",
+            year: aiData.year || 0,
+            hp: aiData.hp || 0,
+            consumption: aiData.consumption || 0,
+            km: aiData.km || 0,
+            price: aiData.price || 0,
+            engine: aiData.engine || 0,
+            region: aiData.region || 0,
+            kasko: aiData.kasko || 0,
+            ownership: aiData.ownership || 0,
+            fuel_price: aiData.fuel_price || 0,
+            osago: aiData.osago || 0,
+            fees: aiData.fees || 0,
+            downtrend: aiData.downtrend || 0,
+            service: aiData.service || 0,
+            fixes: aiData.fixes || 0
         };
 
     } catch (error) {
@@ -229,7 +237,7 @@ function displayResults(tcoResult, carData) {
             <span class="expense-value">${formatCurrency(breakdown.maintenance)}</span>
         </div>
         <div class="expense-item">
-            <span class="expense-label">📉 Амортизация:</span>
+            <span class="expense-label">📉 Снижение стоимости:</span>
             <span class="expense-value">${formatCurrency(breakdown.depreciation)}</span>
         </div>
         <div class="expense-item">
@@ -276,6 +284,41 @@ function displayResults(tcoResult, carData) {
                 </div>
             </div>
         `;
+
+
+
+
+        document.getElementById('vis-brand').textContent = carData.brand || '-';
+        document.getElementById('vis-model').textContent = carData.model || '-';
+        document.getElementById('vis-year').textContent = carData.year || '-';
+        document.getElementById('vis-engine').textContent = carData.engine || '-';
+        document.getElementById('vis-hp').textContent = (carData.hp || '-') + ' л.с.';
+        document.getElementById('vis-price').textContent = carData.price ? 
+            formatCurrency(carData.price) : '-';
+        
+        // ЗАГОЛОВОК
+        document.getElementById('car-title').textContent = 
+            `${carData.brand || ''} ${carData.model || ''}`.trim() || 'Автомобиль';
+        
+        // ФОТОГРАФИЯ
+        const carImage = document.getElementById('car-image');
+        const placeholder = document.getElementById('car-image-placeholder');
+        
+        if (carData.brand && carData.model && carData.year) {
+            // Формируем имя файла без пробелов
+            const imageName = `pic${carData.brand}${carData.model}${carData.year}.jpg`
+                .toLowerCase()
+                .replace(/\s+/g, '');
+            
+            // Плейсхолдер с текстом
+            carImage.src = `https://via.placeholder.com/400x200/667eea/ffffff?text=${carData.brand}+${carData.model}`;
+            carImage.alt = `${carData.brand} ${carData.model} ${carData.year}`;
+            carImage.style.display = 'block';
+            placeholder.style.display = 'none';
+        } else {
+            carImage.style.display = 'none';
+            placeholder.style.display = 'flex';
+        }
     }
     
     // Дополнительная информация
@@ -311,7 +354,7 @@ function drawExpensesChart(breakdown) {
         expensesChart.destroy();
     }
     
-    const labels = ['Топливо', 'Страховка', 'Налоги', 'ТО', 'Амортизация', 'Парковка', 'Прочее'];
+    const labels = ['Топливо', 'Страховка', 'Налоги', 'ТО и ремонт', 'Снижение стоимости', 'Парковка'];
     const values = [
         breakdown.fuel,
         breakdown.insurance,

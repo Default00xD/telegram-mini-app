@@ -25,7 +25,7 @@ function calculateTCO(carData) {
 
 // Получение среднего TCO для сравнения
 function getAverageTCO(carData) {
-   return 0;
+   return 1;
 }
 
 // Экспорт функций

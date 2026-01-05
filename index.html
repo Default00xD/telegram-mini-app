@@ -10,6 +10,7 @@
 </head>
 <body>
     <div class="container">
+
         <header>
             <h1>🚗 Расчет стоимости владения</h1>
             <p>Узнайте полную стоимость владения автомобилем</p>
@@ -116,6 +117,57 @@
 
             <!-- Результаты расчета -->
             <div id="results-section" class="section" style="display: none;">
+
+
+
+
+                <div class="card" id="car-visual-card" style="display: none;">
+                    <div class="car-header">
+                        <h2 id="car-title">Автомобиль</h2>
+                        <button class="like-btn" id="like-btn" aria-label="Добавить в избранное">
+                            <svg class="like-icon" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="car-image-container">
+                        <img id="car-image" src="" alt="Фото автомобиля" class="car-image">
+                        <div id="car-image-placeholder" class="car-image-placeholder">
+                            🚗 Фото недоступно
+                        </div>
+                    </div>
+                    
+                    <div class="car-specs">
+                        <div class="spec-item">
+                            <span class="spec-label">Марка:</span>
+                            <span class="spec-value" id="vis-brand">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Модель:</span>
+                            <span class="spec-value" id="vis-model">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Год:</span>
+                            <span class="spec-value" id="vis-year">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Двигатель:</span>
+                            <span class="spec-value" id="vis-engine">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Мощность:</span>
+                            <span class="spec-value" id="vis-hp">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Цена:</span>
+                            <span class="spec-value" id="vis-price">-</span>
+                        </div>
+                    </div>
+                </div>
+
+
+
                 <div class="card">
                     <h2>📊 Результаты расчета</h2>
                     <div class="tco-results">
