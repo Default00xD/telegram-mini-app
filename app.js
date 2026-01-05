@@ -311,7 +311,7 @@ function displayResults(tcoResult, carData) {
                 .replace(/\s+/g, '');
             
             // Плейсхолдер с текстом
-            carImage.src = `https://via.placeholder.com/400x200/667eea/ffffff?text=${carData.brand}+${carData.model}`;
+            carImage.src = `static/picOpelAstra2011.jpg`;
             carImage.alt = `${carData.brand} ${carData.model} ${carData.year}`;
             carImage.style.display = 'block';
             placeholder.style.display = 'none';
