@@ -108,7 +108,7 @@ async def parse_car(request: CarParseRequest):
                                         "kasko": 25000,
                                         "consumption": 7.5,
                                         "fees": 4500,
-                                        "downtrend": 9000,
+                                        "downtrend": 9000, 
                                         "service": 20000,
                                         "fixes": 40000,
                                         "annual_km": 20000,

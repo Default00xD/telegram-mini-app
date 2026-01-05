@@ -1,5 +1,6 @@
 // Инициализация Telegram Web App
 const tg = window.Telegram.WebApp;
+const carStorage = new CarStorage();
 tg.ready();
 tg.expand();
 
@@ -16,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeApp() {
     console.log("init...:");
 
+    
     // Обработчик кнопки распознавания
     const parseBtn = document.getElementById('parse-btn');
     const carInput = document.getElementById('car-input');
@@ -34,17 +36,67 @@ function initializeApp() {
     document.getElementById('back-btn').addEventListener('click', function() {
         showInputSection();
     });
-
-    const likeBtn = document.getElementById('like-btn');
-    if (likeBtn) {
-        likeBtn.addEventListener('click', function() {
-            this.classList.toggle('active');
-            tg.HapticFeedback.impactOccurred('light');
-        });
-    }
     
     // Настройка Telegram кнопки
     tg.MainButton.hide();
+
+    const likeBtn = document.getElementById('like-btn');
+    if (likeBtn) {
+        likeBtn.addEventListener('click', async function() {
+            if (!currentCarData) {
+                tg.showAlert('Сначала введите данные автомобиля');
+                return;
+            }
+            
+            const isLiked = !this.classList.contains('active');
+            
+            if (isLiked) {
+                // Сохраняем ВСЕ данные машины
+                const saveData = {
+                    brand: currentCarData.brand,
+                    model: currentCarData.model,
+                    year: currentCarData.year,
+                    engine: currentCarData.engine,
+                    hp: currentCarData.hp,
+                    price: currentCarData.price,
+                    // ВСЕ пользовательские данные
+                    personalData: {
+                        consumption: currentCarData.consumption,
+                        km: currentCarData.km,
+                        annual_km: currentCarData.annual_km,
+                        ownership: currentCarData.ownership,
+                        region: currentCarData.region,
+                        fuel_price: currentCarData.fuel_price,
+                        osago: currentCarData.osago,
+                        kasko: currentCarData.kasko,
+                        fees: currentCarData.fees,
+                        downtrend: currentCarData.downtrend,
+                        service: currentCarData.service,
+                        fixes: currentCarData.fixes,
+                        parking: currentCarData.parking
+                    }
+                };
+                
+                const result = await carStorage.saveLikedCar(saveData);
+                
+                if (result.success) {
+                    this.classList.add('active');
+                    tg.HapticFeedback.impactOccurred('light');
+                    tg.showAlert('✅ Добавлено в избранное');
+                    
+                    // Отправляем в глобальную статистику (Firestore)
+                    await sendToGlobalStats(currentCarData);
+                }
+            } else {
+                // Удаляем лайк
+                const carId = carStorage.generateCarId(currentCarData);
+                await carStorage.removeLikedCar(carId);
+                this.classList.remove('active');
+                tg.HapticFeedback.impactOccurred('light');
+                tg.showAlert('🗑️ Удалено из избранного');
+            }
+        });
+    }
 }
 
 
@@ -121,7 +173,7 @@ async function handleParseCar() {
 }
 
 // Заполнение формы данными автомобиля
-function fillCarForm(carData) {
+async function fillCarForm(carData) {
     console.log("func: fillCarForm");
 
     document.getElementById('brand').value = carData.brand;
@@ -147,6 +199,41 @@ function fillCarForm(carData) {
     
     document.getElementById('car-details-card').style.display = 'block';
 
+    const isLiked = await carStorage.isCarLiked(carData);
+    const likeBtn = document.getElementById('like-btn');
+    
+    if (isLiked) {
+        likeBtn.classList.add('active');
+        console.log("🚗 Машина уже в избранном");
+    } else {
+        likeBtn.classList.remove('active');
+    }
+    
+    // 2. Заполняем визуальную карточку
+    document.getElementById('car-visual-card').style.display = 'block';
+    document.getElementById('vis-brand').textContent = carData.brand || '-';
+    document.getElementById('vis-model').textContent = carData.model || '-';
+    document.getElementById('vis-year').textContent = carData.year || '-';
+    document.getElementById('vis-engine').textContent = carData.engine || '-';
+    document.getElementById('vis-hp').textContent = (carData.hp || '-') + (carData.hp ? ' л.с.' : '');
+    document.getElementById('vis-price').textContent = carData.price ? 
+        formatCurrency(carData.price) : '-';
+    
+    // 3. Фото
+    const carImage = document.getElementById('car-image');
+    const placeholder = document.getElementById('car-image-placeholder');
+    
+    if (carData.brand && carData.model && carData.year) {
+        carImage.src = `static/pic${carData.brand}${carData.model}${carData.year}.jpg`;
+        carImage.onerror = () => {
+            carImage.style.display = 'none';
+            placeholder.style.display = 'flex';
+        };
+        carImage.onload = () => {
+            carImage.style.display = 'block';
+            placeholder.style.display = 'none';
+        };
+    }
 }
 
 // Обработка расчета TCO
@@ -432,6 +519,53 @@ function formatCurrency(value) {
         maximumFractionDigits: 0
     }).format(value);
 }
+
+
+
+// В app.js добавьте:
+document.getElementById('show-likes-btn').addEventListener('click', showMyLikes);
+
+async function showMyLikes() {
+    const cars = await carStorage.getLikedCars();
+    
+    if (cars.length === 0) {
+        tg.showAlert('У вас нет сохранённых машин');
+        return;
+    }
+    
+    // Скрываем основную секцию
+    document.getElementById('input-section').style.display = 'none';
+    document.getElementById('my-likes-card').style.display = 'block';
+    
+    // Показываем список
+    const listHtml = cars.map(car => `
+        <div class="liked-car-item">
+            <h3>${car.brand} ${car.model} ${car.year}</h3>
+            <p>💰 ${formatCurrency(car.price || 0)}</p>
+            <p>⚙️ ${car.engine || '-'} • ${car.hp || '-'} л.с.</p>
+            <button onclick="loadLikedCar('${car.id}')" class="btn-small">
+                🔄 Загрузить данные
+            </button>
+        </div>
+    `).join('');
+    
+    document.getElementById('likes-list').innerHTML = listHtml;
+}
+
+async function loadLikedCar(carId) {
+    const cars = await carStorage.getLikedCars();
+    const car = cars.find(c => c.id === carId);
+    
+    if (car) {
+        // Заполняем форму данными из сохранённой машины
+        fillCarForm(car);
+        // Показываем основную секцию
+        document.getElementById('my-likes-card').style.display = 'none';
+        document.getElementById('input-section').style.display = 'block';
+    }
+}
+
+
 
 // Настройка цветовой схемы Telegram
 if (tg.colorScheme === 'dark') {
