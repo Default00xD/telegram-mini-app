@@ -44,22 +44,27 @@ class CarStorage {
     // Инициализация Firebase
     async initFirebase() {
         try {
-            // Проверяем, не инициализирован ли Firebase уже
+            console.log("🔥 Initializing Firebase...");
+            
+            // Проверяем, загружены ли Firebase скрипты
             if (typeof firebase === 'undefined') {
-                console.warn("Firebase not loaded");
+                console.warn("Firebase scripts not loaded yet");
                 return false;
             }
             
-            // Инициализируем Firebase
+            // Инициализируем Firebase App
             if (!firebase.apps.length) {
                 firebase.initializeApp(this.firebaseConfig);
+                console.log("✅ Firebase app initialized");
             }
             
+            // Инициализируем Firestore
             this.db = firebase.firestore();
             this.firebaseInitialized = true;
             
-            console.log("🔥 Firebase initialized successfully");
+            console.log("✅ Firebase Firestore initialized");
             return true;
+            
         } catch (error) {
             console.error("❌ Firebase init error:", error);
             this.firebaseInitialized = false;
