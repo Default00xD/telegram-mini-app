@@ -1,7 +1,3 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-
-
 class CarStorage {
     constructor() {
         this.userId = this.getOrCreateUserId();
@@ -437,12 +433,12 @@ class CarStorage {
 }
 
 // Создаем экземпляр только если его еще нет
-if (typeof window.carStorage === 'undefined') {
-    window.carStorage = new CarStorage();
+if (typeof carStorage === 'undefined') {
+    carStorage = new CarStorage();
     console.log("🚀 CarStorage with Firebase initialized");
     
     // Тестовая функция
-    window.testStorage = async function() {
+    testStorage = async function() {
         console.log("🧪 Testing storage...");
         const stats = await carStorage.getStorageStats();
         console.log("📊 Storage stats:", stats);
