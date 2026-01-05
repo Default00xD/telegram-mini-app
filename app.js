@@ -2,7 +2,6 @@ const tg = window.Telegram.WebApp;
 const carStorage = new CarStorage();
 tg.ready();
 tg.expand();
-
 // Состояние приложения
 let currentCarData = null;
 let tcoResults = null;
@@ -565,6 +564,31 @@ async function loadLikedCar(carId) {
     }
 }
 
+
+// В app.js добавьте функцию
+async function testStorage() {
+    console.log("🧪 Starting storage test...");
+    
+    try {
+        const result = await window.testStorage();
+        
+        // Показываем результат
+        tg.showAlert(`
+            Тест хранилища:
+            ✅ Успешно!
+            
+            Машин: ${result.stats.totalCars}
+            Среда: ${result.stats.environment}
+            Telegram: ${result.stats.hasTelegramStorage ? 'Да' : 'Нет'}
+        `);
+        
+        console.log("🧪 Test result:", result);
+        
+    } catch (error) {
+        console.error("❌ Storage test failed:", error);
+        tg.showAlert(`❌ Ошибка теста: ${error.message}`);
+    }
+}
 
 
 // Настройка цветовой схемы Telegram
