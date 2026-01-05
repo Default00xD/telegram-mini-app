@@ -113,7 +113,7 @@ async def parse_car(request: CarParseRequest):
                                         "fixes": 40000,
                                         "annual_km": 20000,
                                         "parking": 0
-                                        "brand": "Opel",
+                                        "brand": "Opel"
                                     }```'''  
         else:
             response = giga.chat(SYSTEM_PROMPT + request.text)
