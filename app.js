@@ -127,6 +127,7 @@ async function getCarData(inputText) {
             hp: aiData.hp || 0,
             consumption: aiData.consumption || 0,
             km: aiData.km || 0,
+            annual_km: aiData.annual_km || 0,
             price: aiData.price || 0,
             engine: aiData.engine || 0,
             region: aiData.region || 0,
