@@ -623,24 +623,22 @@ body.dark-theme .spec-item {
 /* Стили для иконки лайка в списке */
 .car-like-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 12px;
+    right: 12px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 6px;
+    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2;
-    transition: all 0.2s ease;
+    z-index: 10; /* ← Увеличить z-index */
 }
 
 .car-like-icon {
     width: 24px;
     height: 24px;
     fill: var(--tg-theme-hint-color, #cccccc);
-    transition: fill 0.2s ease;
 }
 
 .car-like-btn.active .car-like-icon {
@@ -667,4 +665,30 @@ body.dark-theme .car-like-btn.active .car-like-icon {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid var(--tg-theme-hint-color, #eaeaea);
+}
+.liked-car-item-horizontal {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--tg-theme-secondary-bg-color, #ffffff);
+    border-radius: 16px;
+    padding: 7px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--tg-theme-hint-color, #eaeaea);
+    overflow: hidden; /* ← Важно! */
+}
+
+/* Если есть :hover эффекты, они не должны влиять на позиционирование */
+.liked-car-item-horizontal:hover {
+    transform: translateY(0); /* Убрать сдвиг при наведении */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Фиксированная тень */
+}
+
+/* Альтернативный вариант: убрать все трансформации */
+@media (hover: hover) {
+    .liked-car-item-horizontal:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        /* transform: translateY(-1px); ← ЗАКОММЕНТИРОВАТЬ или УДАЛИТЬ */
+    }
 }
