@@ -525,8 +525,7 @@ document.getElementById('back-to-main').addEventListener('click', hideMyLikes);
 
 async function showMyLikes() {
     const cars = await carStorage.getLikedCars();
-    const carImage = document.getElementById('car-image-g');
-    const placeholder = document.getElementById('car-image-placeholder-g');
+    
     if (cars.length === 0) {
         tg.showAlert('У вас нет сохранённых машин');
         return;
@@ -534,9 +533,7 @@ async function showMyLikes() {
     
     document.getElementById('my-likes-card').style.display = 'block';
     document.getElementById('show-likes-btn').style.display = 'none';
-    carImage.src = `static/picOpelAstra2011.jpg`;
-    carImage.alt = `${carData.brand} ${carData.model} ${carData.year}`;
-    carImage.style.display = 'block';
+    
 
     // Показываем список
     const listHtml = cars.map(car => `
@@ -554,7 +551,13 @@ async function showMyLikes() {
             
         </div>
     `).join('');
-    
+    const carImage = document.getElementById('car-image-g');
+    const placeholder = document.getElementById('car-image-placeholder-g');
+    carImage.src = `static/picOpelAstra2011.jpg`;
+    carImage.alt = `${carData.brand} ${carData.model} ${carData.year}`;
+    carImage.style.display = 'block';
+    placeholder.style.display = 'none';
+
     document.getElementById('likes-list').innerHTML = listHtml;
 }
 
