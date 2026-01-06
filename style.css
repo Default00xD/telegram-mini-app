@@ -321,16 +321,18 @@ body.dark-theme {
 }
 /* Новый стиль для горизонтального списка лайков */
 
+/* АДАПТИВНЫЕ ЦВЕТА ДЛЯ ГОРИЗОНТАЛЬНЫХ КАРТОЧЕК */
+
 .liked-car-item-horizontal {
     display: flex;
     align-items: center;
-    background: white;
+    background: var(--tg-theme-secondary-bg-color, #ffffff);
     border-radius: 16px;
     padding: 7px;
     margin-bottom: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid #eaeaea;
+    border: 1px solid var(--tg-theme-hint-color, #eaeaea);
 }
 
 .liked-car-item-horizontal:active {
@@ -346,8 +348,8 @@ body.dark-theme {
     overflow: hidden;
     margin-right: 16px;
     position: relative;
-    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-    border: 2px solid #f0f0f0;
+    background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+    border: 2px solid var(--tg-theme-hint-color, #f0f0f0);
 }
 
 .car-image-horizontal {
@@ -367,8 +369,9 @@ body.dark-theme {
     align-items: center;
     justify-content: center;
     font-size: 32px;
-    background: #f8f9fa;
-    display: none; /* Скрыто по умолчанию */
+    background: var(--tg-theme-secondary-bg-color, #f8f9fa);
+    color: var(--tg-theme-hint-color, #999999);
+    display: none;
 }
 
 .car-info-horizontal {
@@ -380,39 +383,20 @@ body.dark-theme {
 
 .car-title-horizontal {
     margin-bottom: 2px;
-}
-
-.car-brand {
-    font-size: 14px;
-    font-weight: 600;
-    color: #666;
-    margin: 0 0 4px 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.car-title-horizontal {
-    margin-bottom: 12px;
     line-height: 1.3;
 }
 
 .car-brand-inline {
     font-size: 16px;
     font-weight: 600;
-    color: #666;
+    color: var(--tg-theme-hint-color, #666);
     margin-right: 4px;
 }
 
 .car-model-inline {
     font-size: 18px;
     font-weight: 700;
-    color: #333;
-}
-.car-model {
-    font-size: 20px;
-    font-weight: 700;
-    color: #333;
-    margin: 0;
-    line-height: 1.2;
+    color: var(--tg-theme-text-color, #333);
 }
 
 .car-details-horizontal {
@@ -430,14 +414,14 @@ body.dark-theme {
 
 .detail-label {
     font-size: 12px;
-    color: #888;
+    color: var(--tg-theme-hint-color, #888);
     font-weight: 500;
     flex-shrink: 0;
 }
 
 .detail-value {
     font-size: 13px;
-    color: #333;
+    color: var(--tg-theme-text-color, #333);
     font-weight: 600;
     text-align: right;
     flex: 1;
@@ -445,9 +429,45 @@ body.dark-theme {
 }
 
 .price-value {
-    color: #2ecc71;
+    color: #2ecc71; /* Можно оставить зеленым для обеих тем */
     font-weight: 700;
     font-size: 14px;
+}
+
+/* Для темной темы Telegram - дополнительные правила */
+@media (prefers-color-scheme: dark) {
+    .car-image-container-horizontal {
+        background: linear-gradient(135deg, 
+            var(--tg-theme-secondary-bg-color, #3a3a3a) 0%, 
+            var(--tg-theme-hint-color, #2d2d2d) 100%);
+        border-color: var(--tg-theme-hint-color, #404040);
+    }
+    
+    .car-image-placeholder-horizontal {
+        background: var(--tg-theme-secondary-bg-color, #3a3a3a);
+        color: var(--tg-theme-hint-color, #888);
+    }
+    
+    .price-value {
+        color: #27ae60; /* Немного темнее зеленый для темной темы */
+    }
+}
+
+/* Если body имеет класс dark-theme (устанавливается JavaScript) */
+body.dark-theme .car-brand-inline {
+    color: var(--tg-theme-hint-color, #aaa);
+}
+
+body.dark-theme .car-model-inline {
+    color: var(--tg-theme-text-color, #fff);
+}
+
+body.dark-theme .detail-label {
+    color: var(--tg-theme-hint-color, #999);
+}
+
+body.dark-theme .detail-value {
+    color: var(--tg-theme-text-color, #ddd);
 }
 
 /* Адаптивность */
@@ -458,8 +478,12 @@ body.dark-theme {
         margin-right: 12px;
     }
     
-    .car-model {
-        font-size: 18px;
+    .car-brand-inline {
+        font-size: 14px;
+    }
+    
+    .car-model-inline {
+        font-size: 16px;
     }
     
     .detail-label {
@@ -472,8 +496,6 @@ body.dark-theme {
     
     .liked-car-item-horizontal {
         padding: 12px;
-        background: var(--tg-theme-secondary-bg-color, #d4d0d0);
-        color: var(--tg-theme-text-color, #302e2e); 
     }
 }
 
@@ -484,6 +506,7 @@ body.dark-theme {
         transform: translateY(-1px);
     }
 }
+
 
 /* Для темной темы Telegram */
 @media (prefers-color-scheme: dark) {

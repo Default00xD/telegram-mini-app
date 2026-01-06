@@ -580,37 +580,37 @@ async function showMyLikes() {
 
     // Показываем список с новым стилем
     const listHtml = cars.map(car => `
-        <div class="liked-car-item-horizontal">
-            <div class="car-image-container-horizontal">
-                <img src="static/picOpelAstra2011.jpg" 
-                     alt="${car.brand} ${car.model}" 
-                     class="car-image-horizontal"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="car-image-placeholder-horizontal">
-                    🚗
+            <div class="liked-car-item-horizontal">
+                <div class="car-image-container-horizontal">
+                    <img src="static/picOpelAstra2011.jpg" 
+                        alt="${car.brand} ${car.model}" 
+                        class="car-image-horizontal"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="car-image-placeholder-horizontal">
+                        🚗
+                    </div>
+                </div>
+                <div class="car-info-horizontal">
+                    <div class="car-title-horizontal">
+                        <span class="car-brand-inline">${car.brand}</span>
+                        <span class="car-model-inline">${car.model} ${car.year}</span>
+                    </div>
+                    <div class="car-details-horizontal">
+                        <div class="detail-item">
+                            <span class="detail-label">Мощность:</span>
+                            <span class="detail-value">${car.hp || '-'} л.с.</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Пробег:</span>
+                            <span class="detail-value">${car.km || '-'} км</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Стоимость:</span>
+                            <span class="detail-value price-value">${formatCurrency(car.price || 0)}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="car-info-horizontal">
-                <div class="car-title-horizontal">
-                    <span class="car-brand-inline">${car.brand}</span>
-                    <span class="car-model-inline">${car.model} ${car.year}</span>
-                </div>
-                <div class="car-details-horizontal">
-                    <div class="detail-item">
-                        <span class="detail-label">Мощность:</span>
-                        <span class="detail-value">${car.hp || '-'} л.с.</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Пробег:</span>
-                        <span class="detail-value">${car.km || '-'} км</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Стоимость:</span>
-                        <span class="detail-value price-value">${formatCurrency(car.price || 0)}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
     `).join('');
 
     document.getElementById('likes-list').innerHTML = listHtml;
@@ -665,4 +665,6 @@ async function testStorage() {
 // Настройка цветовой схемы Telegram
 if (tg.colorScheme === 'dark') {
     document.body.classList.add('dark-theme');
+} else {
+    document.body.classList.remove('dark-theme');
 }
