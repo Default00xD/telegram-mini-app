@@ -525,7 +525,8 @@ document.getElementById('back-to-main').addEventListener('click', hideMyLikes);
 
 async function showMyLikes() {
     const cars = await carStorage.getLikedCars();
-    
+    const carImage = document.getElementById('car-image-g');
+    const placeholder = document.getElementById('car-image-placeholder-g');
     if (cars.length === 0) {
         tg.showAlert('У вас нет сохранённых машин');
         return;
@@ -542,10 +543,10 @@ async function showMyLikes() {
         <div class="liked-car-item">
             <h3>${car.brand} ${car.model} ${car.year}</h3>
             <div class="car-image-container">
-                        <img id="car-image" src="" alt="Фото автомобиля" class="car-image">
-                        <div id="car-image-placeholder" class="car-image-placeholder">
+                <img id="car-image-g" src="" alt="Фото автомобиля" class="car-image">
+                <div id="car-image-placeholder-g" class="car-image-placeholder">
                             🚗 Фото недоступно
-                        </div>
+                </div>
             </div>
             <p>💰 ${formatCurrency(car.price || 0)}</p>
             <p>⚙️ ${car.engine || '-'} • ${car.hp || '-'} л.с.</p>
