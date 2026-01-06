@@ -56,6 +56,7 @@ function initializeApp() {
                     engine: currentCarData.engine,
                     hp: currentCarData.hp,
                     price: currentCarData.price,
+                    km: currentCarData.km,
                     // ВСЕ пользовательские данные
                     personalData: {
                         consumption: currentCarData.consumption,
