@@ -521,6 +521,7 @@ function formatCurrency(value) {
 
 // В app.js добавьте:
 document.getElementById('show-likes-btn').addEventListener('click', showMyLikes);
+document.getElementById('back-to-main').addEventListener('click', hideMyLikes);
 
 async function showMyLikes() {
     const cars = await carStorage.getLikedCars();
@@ -530,24 +531,37 @@ async function showMyLikes() {
         return;
     }
     
-    // Скрываем основную секцию
-    document.getElementById('input-section').style.display = 'none';
     document.getElementById('my-likes-card').style.display = 'block';
-    
+    document.getElementById('show-likes-btn').style.display = 'none';
+    carImage.src = `static/picOpelAstra2011.jpg`;
+    carImage.alt = `${carData.brand} ${carData.model} ${carData.year}`;
+    carImage.style.display = 'block';
+
     // Показываем список
     const listHtml = cars.map(car => `
         <div class="liked-car-item">
             <h3>${car.brand} ${car.model} ${car.year}</h3>
+            <div class="car-image-container">
+                        <img id="car-image" src="" alt="Фото автомобиля" class="car-image">
+                        <div id="car-image-placeholder" class="car-image-placeholder">
+                            🚗 Фото недоступно
+                        </div>
+            </div>
             <p>💰 ${formatCurrency(car.price || 0)}</p>
             <p>⚙️ ${car.engine || '-'} • ${car.hp || '-'} л.с.</p>
-            <button onclick="loadLikedCar('${car.id}')" class="btn-small">
-                🔄 Загрузить данные
-            </button>
+            <p> ${car.km}</p>
+            
         </div>
     `).join('');
     
     document.getElementById('likes-list').innerHTML = listHtml;
 }
+
+async function hideMyLikes() {
+    document.getElementById('my-likes-card').style.display = 'none';
+    document.getElementById('show-likes-btn').style.display = 'block';
+}
+
 
 async function loadLikedCar(carId) {
     const cars = await carStorage.getLikedCars();
