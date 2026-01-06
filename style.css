@@ -623,8 +623,8 @@ body.dark-theme .spec-item {
 /* Стили для иконки лайка в списке */
 .car-like-btn {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 8px;
+    right: 8px;
     background: none;
     border: none;
     cursor: pointer;

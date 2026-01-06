@@ -594,13 +594,12 @@ async function showMyLikes() {
             </div>
             <div class="car-info-horizontal">
                 <div class="car-title-horizontal">
-                    <span class="car-brand-inline">${car.brand}</span>
-                    <span class="car-model-inline">${car.model} ${car.year}</span>
+                    <span class="car-model-inline">${car.brand} ${car.model}</span>
                 </div>
                 <div class="car-details-horizontal">
                     <div class="detail-item">
-                        <span class="detail-label">Мощность:</span>
-                        <span class="detail-value">${car.hp || '-'} л.с.</span>
+                        <span class="detail-label">Год:</span>
+                        <span class="detail-value">${car.year || '-'} г.</span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Пробег:</span>
