@@ -553,7 +553,6 @@ async function showMyLikes() {
     `).join('');
     const carImage = document.getElementById('car-image-g');
     const placeholder = document.getElementById('car-image-placeholder-g');
-    carImage.src = `static/picOpelAstra2011.jpg`;
     carImage.alt = `Opel Astra 2011`;
     carImage.style.display = 'block';
     placeholder.style.display = 'none';
