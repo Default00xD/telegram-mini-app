@@ -545,7 +545,7 @@ async function showMyLikes() {
             </div>
             <p>💰 ${formatCurrency(car.price || 0)}</p>
             <p>⚙️ ${car.engine || '-'} • ${car.hp || '-'} л.с.</p>
-            <p> ${car.km}</p>
+            <p>пробег: ${car.km}</p>
             
         </div>
     `).join('');
