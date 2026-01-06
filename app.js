@@ -651,9 +651,30 @@ async function showMyLikes() {
                         }, 200);
                     }
                 } else {
-                    // Добавляем лайк (не должно происходить, т.к. в списке только лайкнутые)
-                    this.classList.add('active');
-                    tg.HapticFeedback.impactOccurred('light');
+                    // Добавляем лайк обратно
+                    const carData = tempRemovedCars.get(carId);
+                    if (carData) {
+                        const result = await carStorage.saveLikedCar(carData);
+                        
+                        if (result.success) {
+                            // Восстанавливаем состояние
+                            this.classList.add('active');
+                            this.querySelector('.car-like-icon').style.fill = '#ff4757';
+                            
+                            // Убираем эффект "удаления"
+                            carItem.style.opacity = '1';
+                            carItem.style.filter = 'grayscale(0%)';
+                            
+                            // Скрываем кнопку "Вернуть"
+                            undoContainer.style.display = 'none';
+                            this.style.display = 'flex';
+                            
+                            tempRemovedCars.delete(carId);
+                            
+                            tg.HapticFeedback.impactOccurred('light');
+                            tg.showAlert('Вернуто в избранное');
+                        }
+                    }
                 }
             });
         });

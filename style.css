@@ -622,15 +622,18 @@ body.dark-theme .spec-item {
 
 /* Стили для иконки лайка в списке */
 .car-like-btn {
-    flex-shrink: 0;
+    position: absolute;
+    top: 20px;
+    right: 20px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 8px;
-    margin-left: 8px;
+    padding: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 2;
+    transition: all 0.2s ease;
 }
 
 .car-like-icon {
