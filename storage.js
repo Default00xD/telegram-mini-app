@@ -19,24 +19,161 @@ class CarStorage {
         this.initFirebase();
     }
 
-    // Генерация/получение UserID
+    // Генерация/получение UserID - ИСПРАВЛЕННАЯ ВЕРСИЯ
     getOrCreateUserId() {
+        // 1. Сначала проверяем, есть ли уже сохраненный ID
         let userId = localStorage.getItem('car_storage_user_id');
         
-        if (!userId) {
-            // Если в Telegram - используем Telegram ID
-            if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
-                userId = 'tg_' + window.Telegram.WebApp.initDataUnsafe.user.id;
-            } else {
-                // Генерируем случайный ID
-                userId = 'user_' + Math.random().toString(36).substr(2, 9);
+        // 2. Если ID уже есть, проверяем его источник
+        if (userId) {
+            // Если это Telegram ID (начинается с 'tg_'), используем его
+            if (userId.startsWith('tg_')) {
+                console.log("✅ Using existing Telegram ID:", userId);
+                return userId;
             }
+            
+            // Если это user_ (локально сгенерированный), проверяем Telegram
+            if (userId.startsWith('user_')) {
+                // Проверяем, может сейчас в Telegram
+                const tgUserId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+                if (tgUserId) {
+                    // Переключаемся на Telegram ID
+                    const newUserId = 'tg_' + tgUserId;
+                    localStorage.setItem('car_storage_user_id', newUserId);
+                    console.log("🔄 Switching to Telegram ID:", newUserId);
+                    return newUserId;
+                }
+                return userId;
+            }
+        }
+        
+        // 3. Если ID нет или нужно создать новый
+        if (!userId) {
+            // Приоритет 1: Telegram ID (работает в Telegram WebApp на любом устройстве)
+            const tgUserId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+            const tgUsername = window.Telegram?.WebApp?.initDataUnsafe?.user?.username;
+            
+            if (tgUserId) {
+                userId = 'tg_' + tgUserId;
+                console.log("✅ Creating new Telegram ID:", userId);
+            } 
+            // Приоритет 2: Telegram username (если нет ID)
+            else if (tgUsername) {
+                userId = 'tguser_' + tgUsername;
+                console.log("✅ Creating Telegram username ID:", userId);
+            }
+            // Приоритет 3: Пробуем получить из URL параметра (для синхронизации)
+            else {
+                const urlParams = new URLSearchParams(window.location.search);
+                const sharedId = urlParams.get('user_id');
+                
+                if (sharedId) {
+                    userId = sharedId;
+                    console.log("✅ Using shared ID from URL:", userId);
+                } else {
+                    // Приоритет 4: Проверяем, может уже есть сохраненный для синхронизации
+                    const syncedId = localStorage.getItem('synced_user_id');
+                    if (syncedId) {
+                        userId = syncedId;
+                        console.log("✅ Using synced ID:", userId);
+                    } else {
+                        // Приоритет 5: Генерируем новый с указанием устройства
+                        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                        const deviceType = isMobile ? 'mobile' : 'desktop';
+                        userId = `${deviceType}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+                        console.log("📱 Creating new device-specific ID:", userId);
+                        
+                        // Предлагаем синхронизацию только если в Telegram
+                        if (window.Telegram?.WebApp) {
+                            setTimeout(() => {
+                                tg.showAlert(
+                                    `Ваш ID для синхронизации:\n${userId}\n\n` +
+                                    `Сохраните его, чтобы ввести на другом устройстве.`
+                                );
+                            }, 1000);
+                        }
+                    }
+                }
+            }
+            
+            // Сохраняем ID
             localStorage.setItem('car_storage_user_id', userId);
+            
+            // Для синхронизации между устройствами
+            if (!userId.startsWith('tg_')) {
+                localStorage.setItem('synced_user_id', userId);
+            }
         }
         
         return userId;
     }
+    // Добавьте эти методы в класс CarStorage:
 
+    // Получить текущий ID пользователя
+    getUserId() {
+        return this.userId;
+    }
+
+    // Синхронизировать с другим ID
+    async syncWithUserId(newUserId) {
+        try {
+            if (!newUserId || newUserId === this.userId) {
+                return { success: false, error: 'Invalid or same ID' };
+            }
+            
+            console.log("🔄 Syncing with user ID:", newUserId);
+            
+            // Сохраняем новый ID
+            const oldUserId = this.userId;
+            localStorage.setItem('car_storage_user_id', newUserId);
+            localStorage.setItem('synced_user_id', newUserId);
+            
+            // Обновляем экземпляр
+            this.userId = newUserId;
+            
+            // Синхронизируем данные из Firestore
+            if (this.firebaseInitialized) {
+                // Получаем данные из Firestore по новому ID
+                const docRef = this.db.collection('users').doc(newUserId);
+                const doc = await docRef.get();
+                
+                if (doc.exists) {
+                    // Если данные есть, используем их
+                    const firestoreData = doc.data();
+                    await this.saveAllData(firestoreData);
+                    console.log("✅ Synced with existing Firestore data");
+                    return { 
+                        success: true, 
+                        message: 'Synced with existing data',
+                        oldUserId,
+                        newUserId 
+                    };
+                } else {
+                    // Если данных нет, сохраняем текущие под новым ID
+                    const currentData = await this.getAllData();
+                    await this.saveToFirestore(currentData);
+                    console.log("✅ Created new Firestore entry");
+                    return { 
+                        success: true, 
+                        message: 'Created new sync entry',
+                        oldUserId,
+                        newUserId 
+                    };
+                }
+            }
+            
+            return { success: true, oldUserId, newUserId };
+            
+        } catch (error) {
+            console.error("❌ Sync error:", error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Сгенерировать ссылку для синхронизации
+    getSyncLink() {
+        return `${window.location.origin}${window.location.pathname}?user_id=${this.userId}`;
+    }
     // Инициализация Firebase
     async initFirebase() {
         try {

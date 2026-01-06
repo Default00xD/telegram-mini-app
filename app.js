@@ -518,7 +518,49 @@ function formatCurrency(value) {
     }).format(value);
 }
 
+// Добавьте в app.js:
 
+// Показать ID пользователя
+function showUserId() {
+    const userId = carStorage.getUserId();
+    tg.showAlert(`
+Ваш ID для синхронизации:
+${userId}
+
+Скопируйте его для ввода на другом устройстве.
+
+Или перейдите по ссылке на другом устройстве:
+${carStorage.getSyncLink()}
+    `);
+}
+
+// Синхронизировать с другим ID
+async function syncUserId() {
+    const userId = prompt('Введите ID с другого устройства:');
+    if (userId && userId.trim()) {
+        const result = await carStorage.syncWithUserId(userId.trim());
+        
+        if (result.success) {
+            tg.showAlert(`
+✅ Синхронизация успешна!
+Старый ID: ${result.oldUserId}
+Новый ID: ${result.newUserId}
+
+Приложение перезагрузится...
+            `);
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            tg.showAlert(`❌ Ошибка: ${result.error}`);
+        }
+    }
+}
+
+// Добавьте кнопки в интерфейс (где-нибудь в настройках или меню):
+function addSyncButtons() {
+    // Добавьте куда-нибудь в ваш HTML:
+    // <button onclick="showUserId()" class="tg-btn">Мой ID</button>
+    // <button onclick="syncUserId()" class="tg-btn secondary">Ввести ID</button>
+}
 
 // В app.js добавьте:
 document.getElementById('show-likes-btn').addEventListener('click', showMyLikes);
