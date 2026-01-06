@@ -472,6 +472,8 @@ body.dark-theme {
     
     .liked-car-item-horizontal {
         padding: 12px;
+        background: var(--tg-theme-secondary-bg-color, #d4d0d0);
+        color: var(--tg-theme-text-color, #302e2e); 
     }
 }
 
@@ -485,10 +487,6 @@ body.dark-theme {
 
 /* Для темной темы Telegram */
 @media (prefers-color-scheme: dark) {
-    .liked-car-item-horizontal {
-        background: #2d2d2d;
-        border-color: #404040;
-    }
     
     .car-model {
         color: #fff;
