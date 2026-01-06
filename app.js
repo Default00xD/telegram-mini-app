@@ -577,43 +577,87 @@ async function showMyLikes() {
     document.getElementById('my-likes-card').style.display = 'block';
     document.getElementById('show-likes-btn').style.display = 'none';
     
-
-    // Показываем список с новым стилем
-    const listHtml = cars.map(car => `
-            <div class="liked-car-item-horizontal">
-                <div class="car-image-container-horizontal">
-                    <img src="static/picOpelAstra2011.jpg" 
-                        alt="${car.brand} ${car.model}" 
-                        class="car-image-horizontal"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="car-image-placeholder-horizontal">
-                        🚗
-                    </div>
+    // Показываем список с иконками лайка
+    const listHtml = cars.map(car => {
+        const carId = car.id || carStorage.generateCarId(car);
+        
+        return `
+        <div class="liked-car-item-horizontal" data-car-id="${carId}">
+            <div class="car-image-container-horizontal">
+                <img src="static/picOpelAstra2011.jpg" 
+                     alt="${car.brand} ${car.model}" 
+                     class="car-image-horizontal"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="car-image-placeholder-horizontal">
+                    🚗
                 </div>
-                <div class="car-info-horizontal">
-                    <div class="car-title-horizontal">
-                        <span class="car-brand-inline">${car.brand}</span>
-                        <span class="car-model-inline">${car.model} ${car.year}</span>
+            </div>
+            <div class="car-info-horizontal">
+                <div class="car-title-horizontal">
+                    <span class="car-brand-inline">${car.brand}</span>
+                    <span class="car-model-inline">${car.model} ${car.year}</span>
+                </div>
+                <div class="car-details-horizontal">
+                    <div class="detail-item">
+                        <span class="detail-label">Мощность:</span>
+                        <span class="detail-value">${car.hp || '-'} л.с.</span>
                     </div>
-                    <div class="car-details-horizontal">
-                        <div class="detail-item">
-                            <span class="detail-label">Мощность:</span>
-                            <span class="detail-value">${car.hp || '-'} л.с.</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Пробег:</span>
-                            <span class="detail-value">${car.km || '-'} км</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Стоимость:</span>
-                            <span class="detail-value price-value">${formatCurrency(car.price || 0)}</span>
-                        </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Пробег:</span>
+                        <span class="detail-value">${car.km || '-'} км</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Стоимость:</span>
+                        <span class="detail-value price-value">${formatCurrency(car.price || 0)}</span>
                     </div>
                 </div>
             </div>
-    `).join('');
+            <button class="car-like-btn active" data-car-id="${carId}">
+                <svg class="car-like-icon" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </button>
+        </div>
+        `;
+    }).join('');
 
     document.getElementById('likes-list').innerHTML = listHtml;
+    
+    // Добавляем обработчики событий для кнопок лайка в списке
+    setTimeout(() => {
+        document.querySelectorAll('.car-like-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const carId = this.getAttribute('data-car-id');
+                const carItem = this.closest('.liked-car-item-horizontal');
+                const isCurrentlyLiked = this.classList.contains('active');
+                
+                if (isCurrentlyLiked) {
+                    // Удаляем лайк
+                    const result = await carStorage.removeLikedCar(carId);
+                    
+                    if (result.success && result.removed) {
+                        // Просто меняем состояние кнопки, не удаляя элемент
+                        this.classList.remove('active');
+                        this.querySelector('.car-like-icon').style.fill = 'var(--tg-theme-hint-color, #cccccc)';
+                        tg.HapticFeedback.impactOccurred('light');
+                        
+                        // Можно добавить эффект "исчезновения"
+                        carItem.style.opacity = '0.5';
+                        carItem.style.transform = 'scale(0.98)';
+                        
+                        setTimeout(() => {
+                            // Но не удаляем - только визуально показываем, что не лайкнуто
+                            // Элемент останется до обновления страницы
+                        }, 200);
+                    }
+                } else {
+                    // Добавляем лайк (не должно происходить, т.к. в списке только лайкнутые)
+                    this.classList.add('active');
+                    tg.HapticFeedback.impactOccurred('light');
+                }
+            });
+        });
+    }, 100);
 }
 
 async function hideMyLikes() {
@@ -667,4 +711,33 @@ if (tg.colorScheme === 'dark') {
     document.body.classList.add('dark-theme');
 } else {
     document.body.classList.remove('dark-theme');
+}
+
+// Дополнительная функция для анимации "лайка"
+function animateLikeButton(button, isLiking) {
+    const icon = button.querySelector('.car-like-icon');
+    
+    if (isLiking) {
+        // Анимация лайка
+        button.classList.add('active');
+        icon.animate([
+            { transform: 'scale(1)', fill: 'var(--tg-theme-hint-color, #cccccc)' },
+            { transform: 'scale(1.3)', fill: '#ff4757' },
+            { transform: 'scale(1)', fill: '#ff4757' }
+        ], {
+            duration: 300,
+            easing: 'ease-out'
+        });
+    } else {
+        // Анимация дизлайка
+        button.classList.remove('active');
+        icon.animate([
+            { transform: 'scale(1)', fill: '#ff4757' },
+            { transform: 'scale(0.7)', fill: 'var(--tg-theme-hint-color, #cccccc)' },
+            { transform: 'scale(1)', fill: 'var(--tg-theme-hint-color, #cccccc)' }
+        ], {
+            duration: 300,
+            easing: 'ease-out'
+        });
+    }
 }

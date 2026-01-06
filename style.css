@@ -619,3 +619,49 @@ body.dark-theme .spec-item {
         font-size: 20px;
     }
 }
+
+/* Стили для иконки лайка в списке */
+.car-like-btn {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.car-like-icon {
+    width: 24px;
+    height: 24px;
+    fill: var(--tg-theme-hint-color, #cccccc);
+    transition: fill 0.2s ease;
+}
+
+.car-like-btn.active .car-like-icon {
+    fill: #ff4757;
+}
+
+/* Для темной темы */
+body.dark-theme .car-like-icon {
+    fill: #666;
+}
+
+body.dark-theme .car-like-btn.active .car-like-icon {
+    fill: #ff4757;
+}
+
+/* Обновите контейнер карточки для размещения кнопки */
+.liked-car-item-horizontal {
+    display: flex;
+    align-items: center;
+    background: var(--tg-theme-secondary-bg-color, #ffffff);
+    border-radius: 16px;
+    padding: 7px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--tg-theme-hint-color, #eaeaea);
+}
