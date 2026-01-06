@@ -540,7 +540,7 @@ async function showMyLikes() {
         <div class="liked-car-item">
             <h3>${car.brand} ${car.model} ${car.year}</h3>
             <div class="car-image-container">
-                <img id="car-image-g" src="" alt="Фото автомобиля" class="car-image">
+                <img id="car-image-g" src="static/picOpelAstra2011.jpg" alt="Фото автомобиля" class="car-image">
                 <div id="car-image-placeholder-g" class="car-image-placeholder">
                             🚗 Фото недоступно
                 </div>
@@ -554,7 +554,7 @@ async function showMyLikes() {
     const carImage = document.getElementById('car-image-g');
     const placeholder = document.getElementById('car-image-placeholder-g');
     carImage.src = `static/picOpelAstra2011.jpg`;
-    carImage.alt = `${carData.brand} ${carData.model} ${carData.year}`;
+    carImage.alt = `Opel Astra 2011`;
     carImage.style.display = 'block';
     placeholder.style.display = 'none';
 
