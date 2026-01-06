@@ -536,20 +536,40 @@ async function showMyLikes() {
     document.getElementById('show-likes-btn').style.display = 'none';
     
 
-    // Показываем список
+    // Показываем список с новым стилем
     const listHtml = cars.map(car => `
-        <div class="liked-car-item">
-            <h3>${car.brand} ${car.model} ${car.year}</h3>
-            <div class="car-image-container">
-                <img id="car-image-g" src="static/picOpelAstra2011.jpg" alt="Фото автомобиля" class="car-image">
+        <div class="liked-car-item-horizontal">
+            <div class="car-image-container-horizontal">
+                <img src="static/picOpelAstra2011.jpg" 
+                     alt="${car.brand} ${car.model}" 
+                     class="car-image-horizontal"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="car-image-placeholder-horizontal">
+                    🚗
+                </div>
             </div>
-            <p>💰 ${formatCurrency(car.price || 0)}</p>
-            <p>⚙️ ${car.engine || '-'} • ${car.hp || '-'} л.с.</p>
-            <p>пробег: ${car.km}</p>
-            
+            <div class="car-info-horizontal">
+                <div class="car-title-horizontal">
+                    <h3 class="car-brand">${car.brand}</h3>
+                    <h2 class="car-model">${car.model} ${car.year}</h2>
+                </div>
+                <div class="car-details-horizontal">
+                    <div class="detail-item">
+                        <span class="detail-label">Мощность:</span>
+                        <span class="detail-value">${car.hp || '-'} л.с.</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Пробег:</span>
+                        <span class="detail-value">${car.km || '-'} км</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Стоимость:</span>
+                        <span class="detail-value price-value">${formatCurrency(car.price || 0)}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     `).join('');
-
 
     document.getElementById('likes-list').innerHTML = listHtml;
 }

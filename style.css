@@ -319,7 +319,187 @@ body.dark-theme {
 .like-btn.active .like-icon {
     fill: #ff4757;
 }
+/* Новый стиль для горизонтального списка лайков */
 
+.liked-car-item-horizontal {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #eaeaea;
+}
+
+.liked-car-item-horizontal:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.car-image-container-horizontal {
+    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-right: 16px;
+    position: relative;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    border: 2px solid #f0f0f0;
+}
+
+.car-image-horizontal {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.car-image-placeholder-horizontal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    background: #f8f9fa;
+    display: none; /* Скрыто по умолчанию */
+}
+
+.car-info-horizontal {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.car-title-horizontal {
+    margin-bottom: 12px;
+}
+
+.car-brand {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin: 0 0 4px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.car-model {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.car-details-horizontal {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+}
+
+.detail-label {
+    font-size: 12px;
+    color: #888;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.detail-value {
+    font-size: 13px;
+    color: #333;
+    font-weight: 600;
+    text-align: right;
+    flex: 1;
+    margin-left: 8px;
+}
+
+.price-value {
+    color: #2ecc71;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* Адаптивность */
+@media (max-width: 380px) {
+    .car-image-container-horizontal {
+        width: 80px;
+        height: 80px;
+        margin-right: 12px;
+    }
+    
+    .car-model {
+        font-size: 18px;
+    }
+    
+    .detail-label {
+        font-size: 11px;
+    }
+    
+    .detail-value {
+        font-size: 12px;
+    }
+    
+    .liked-car-item-horizontal {
+        padding: 12px;
+    }
+}
+
+/* Эффект при наведении (для десктопов) */
+@media (hover: hover) {
+    .liked-car-item-horizontal:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+    }
+}
+
+/* Для темной темы Telegram */
+@media (prefers-color-scheme: dark) {
+    .liked-car-item-horizontal {
+        background: #2d2d2d;
+        border-color: #404040;
+    }
+    
+    .car-model {
+        color: #fff;
+    }
+    
+    .car-brand {
+        color: #aaa;
+    }
+    
+    .detail-label {
+        color: #999;
+    }
+    
+    .detail-value {
+        color: #ddd;
+    }
+    
+    .car-image-container-horizontal {
+        background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+        border-color: #404040;
+    }
+    
+    .car-image-placeholder-horizontal {
+        background: #3a3a3a;
+        color: #888;
+    }
+}
 .car-image-container {
     position: relative;
     width: 100%;
