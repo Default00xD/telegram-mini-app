@@ -630,51 +630,45 @@ async function showMyLikes() {
                 const carItem = this.closest('.liked-car-item-horizontal');
                 const isCurrentlyLiked = this.classList.contains('active');
                 
+                // Находим данные машины в исходном массиве cars
+                const carData = cars.find(c => {
+                    const cId = c.id || carStorage.generateCarId(c);
+                    return cId === carId;
+                });
+                
+                if (!carData) return;
+                
                 if (isCurrentlyLiked) {
                     // Удаляем лайк
                     const result = await carStorage.removeLikedCar(carId);
                     
                     if (result.success && result.removed) {
-                        // Просто меняем состояние кнопки, не удаляя элемент
                         this.classList.remove('active');
                         this.querySelector('.car-like-icon').style.fill = 'var(--tg-theme-hint-color, #cccccc)';
                         tg.HapticFeedback.impactOccurred('light');
                         
-                        // Можно добавить эффект "исчезновения"
+                        // Эффект "удаления"
                         carItem.style.opacity = '0.5';
                         carItem.style.transform = 'scale(0.98)';
                         
-                        setTimeout(() => {
-                            // Но не удаляем - только визуально показываем, что не лайкнуто
-                            // Элемент останется до обновления страницы
-                        }, 200);
-                    } else {
-                        // Добавляем лайк обратно
-                        const carData = tempRemovedCars.get(carId);
-                        if (carData) {
-                            const result = await carStorage.saveLikedCar(carData);
-                            
-                            if (result.success) {
-                                // Восстанавливаем состояние
-                                this.classList.add('active');
-                                this.querySelector('.car-like-icon').style.fill = '#ff4757';
-                                
-                                // Убираем эффект "удаления"
-                                carItem.style.opacity = '1';
-                                carItem.style.filter = 'grayscale(0%)';
-                                
-                                // Скрываем кнопку "Вернуть"
-                                undoContainer.style.display = 'none';
-                                this.style.display = 'flex';
-                                
-                                tempRemovedCars.delete(carId);
-                                
-                                tg.HapticFeedback.impactOccurred('light');
-                                tg.showAlert('Вернуто в избранное');
-                            }
-                        }
+                        tg.showAlert('Удалено из избранного');
                     }
-                } 
+                } else {
+                    // Восстанавливаем лайк (повторное нажатие)
+                    const result = await carStorage.saveLikedCar(carData);
+                    
+                    if (result.success) {
+                        this.classList.add('active');
+                        this.querySelector('.car-like-icon').style.fill = '#ff4757';
+                        tg.HapticFeedback.impactOccurred('light');
+                        
+                        // Убираем эффект "удаления"
+                        carItem.style.opacity = '1';
+                        carItem.style.transform = 'scale(1)';
+                        
+                        tg.showAlert('Вернуто в избранное');
+                    }
+                }
             });
         });
     }, 100);
