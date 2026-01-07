@@ -648,33 +648,33 @@ async function showMyLikes() {
                             // Но не удаляем - только визуально показываем, что не лайкнуто
                             // Элемент останется до обновления страницы
                         }, 200);
-                    }
-                } else {
-                    // Добавляем лайк обратно
-                    const carData = tempRemovedCars.get(carId);
-                    if (carData) {
-                        const result = await carStorage.saveLikedCar(carData);
-                        
-                        if (result.success) {
-                            // Восстанавливаем состояние
-                            this.classList.add('active');
-                            this.querySelector('.car-like-icon').style.fill = '#ff4757';
+                    } else {
+                        // Добавляем лайк обратно
+                        const carData = tempRemovedCars.get(carId);
+                        if (carData) {
+                            const result = await carStorage.saveLikedCar(carData);
                             
-                            // Убираем эффект "удаления"
-                            carItem.style.opacity = '1';
-                            carItem.style.filter = 'grayscale(0%)';
-                            
-                            // Скрываем кнопку "Вернуть"
-                            undoContainer.style.display = 'none';
-                            this.style.display = 'flex';
-                            
-                            tempRemovedCars.delete(carId);
-                            
-                            tg.HapticFeedback.impactOccurred('light');
-                            tg.showAlert('Вернуто в избранное');
+                            if (result.success) {
+                                // Восстанавливаем состояние
+                                this.classList.add('active');
+                                this.querySelector('.car-like-icon').style.fill = '#ff4757';
+                                
+                                // Убираем эффект "удаления"
+                                carItem.style.opacity = '1';
+                                carItem.style.filter = 'grayscale(0%)';
+                                
+                                // Скрываем кнопку "Вернуть"
+                                undoContainer.style.display = 'none';
+                                this.style.display = 'flex';
+                                
+                                tempRemovedCars.delete(carId);
+                                
+                                tg.HapticFeedback.impactOccurred('light');
+                                tg.showAlert('Вернуто в избранное');
+                            }
                         }
                     }
-                }
+                } 
             });
         });
     }, 100);
